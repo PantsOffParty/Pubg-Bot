@@ -54,7 +54,7 @@ public class Main extends ListenerAdapter {
             event.getChannel().sendMessage("Pong!").queue();
         }
 
-        if (messageText.toLowerCase().contains("/drop")) {
+        if (messageText.toLowerCase().contains("!drop")) {
             String cmdSplit[] = messageText.split(" ", 2);
             BufferedImage img;
             if (cmdSplit.length != 2) {

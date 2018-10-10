@@ -1,8 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
+<<<<<<< HEAD
     <list default="true" id="8d07c9ef-2569-43ca-be74-a6b6406d69cc" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.gitignore/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore/.gitignore" afterDir="false" />
+=======
+    <list default="true" id="b5b5c1db-11dd-43a6-bf96-dfb60564be07" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__club_minnced_opus_java_1_0_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__club_minnced_opus_java_api_1_0_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__club_minnced_opus_java_natives_1_0_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_code_findbugs_jsr305_3_0_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_neovisionaries_nv_websocket_client_2_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_squareup_okhttp3_okhttp_3_8_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_squareup_okio_okio_1_13_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__junit_junit_4_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_dv8tion_JDA_3_7_1_387.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_java_dev_jna_jna_4_4_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_sf_trove4j_trove4j_3_0_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apache_commons_commons_collections4_4_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_hamcrest_hamcrest_core_1_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_json_json_20160810.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_slf4j_slf4j_api_1_7_25.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules/PUBG-Bot.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules/PUBG-Bot_main.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules/PUBG-Bot_test.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PUBG-Bot.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
+>>>>>>> master
     </list>
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -19,39 +48,61 @@
     </projectState>
   </component>
   <component name="FUSProjectUsageTrigger">
+<<<<<<< HEAD
     <session id="-759401272">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
           <entry key="project.open.time.2" value="1" />
+=======
+    <session id="-2053630511">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.open.time.0" value="1" />
+>>>>>>> master
           <entry key="project.opened" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
+<<<<<<< HEAD
           <entry key="gitignore" value="1" />
+=======
+>>>>>>> master
           <entry key="java" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="JAVA" value="1" />
+<<<<<<< HEAD
           <entry key="PLAIN_TEXT" value="1" />
+=======
+>>>>>>> master
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
+<<<<<<< HEAD
           <entry key="gitignore" value="1" />
+=======
+          <entry key="java" value="1" />
+>>>>>>> master
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
+<<<<<<< HEAD
           <entry key="PLAIN_TEXT" value="1" />
+=======
+          <entry key="JAVA" value="1" />
+>>>>>>> master
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf>
+<<<<<<< HEAD
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/Main.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -66,6 +117,16 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="314">
               <caret line="27" lean-forward="true" selection-start-line="27" selection-end-line="27" />
+=======
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/Main.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="85">
+              <caret line="56" column="49" selection-start-line="56" selection-start-column="49" selection-end-line="56" selection-end-column="49" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+>>>>>>> master
             </state>
           </provider>
         </entry>
@@ -78,7 +139,11 @@
   <component name="GradleLocalSettings">
     <option name="myGradleHomes">
       <map>
+<<<<<<< HEAD
         <entry key="$PROJECT_DIR$" value="C:\Program Files\Gradle\gradle-4.9" />
+=======
+        <entry key="$PROJECT_DIR$" value="C:\ProgramData\chocolatey\lib\gradle\tools\gradle-4.9" />
+>>>>>>> master
       </map>
     </option>
     <option name="myGradleVersions">
@@ -356,6 +421,7 @@
               <option name="name" value="PUBG-Bot" />
               <option name="projectBuildClasspath">
                 <list>
+<<<<<<< HEAD
                   <option value="C:/Program Files/Gradle/gradle-4.9/src/announce" />
                   <option value="C:/Program Files/Gradle/gradle-4.9/src/antlr" />
                   <option value="C:/Program Files/Gradle/gradle-4.9/src/base-services" />
@@ -502,6 +568,84 @@
                   <option value="C:/Program Files/Gradle/gradle-4.9/lib/plugins/gradle-version-control-4.9.jar" />
                   <option value="C:/Program Files/Gradle/gradle-4.9/lib/plugins/gradle-workers-4.9.jar" />
                   <option value="C:/Program Files/Gradle/gradle-4.9/lib/plugins/ivy-2.2.0.jar" />
+=======
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/ant-1.9.11.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/ant-launcher-1.9.11.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-base-services-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-base-services-groovy-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-build-cache-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-build-option-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-cli-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-core-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-core-api-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-docs-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-installation-beacon-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-jvm-services-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-kotlin-dsl-0.18.4.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-kotlin-dsl-provider-plugins-0.18.4.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-kotlin-dsl-tooling-builders-0.18.4.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-kotlin-dsl-tooling-models-0.18.4.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-launcher-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-logging-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-messaging-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-model-core-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-model-groovy-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-native-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-persistent-cache-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-process-services-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-resources-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-runtime-api-info-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-tooling-api-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/gradle-wrapper-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/groovy-all-2.4.12.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-announce-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-antlr-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-build-cache-http-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-build-comparison-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-build-init-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-code-quality-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-composite-builds-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-dependency-management-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-diagnostics-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-ear-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-ide-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-ide-native-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-ide-play-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-ivy-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-jacoco-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-javascript-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-language-groovy-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-language-java-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-language-jvm-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-language-native-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-language-scala-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-maven-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-osgi-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-platform-base-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-platform-jvm-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-platform-native-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-platform-play-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-plugin-development-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-plugin-use-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-plugins-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-publish-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-reporting-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-resources-gcs-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-resources-http-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-resources-s3-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-resources-sftp-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-scala-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-signing-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-test-kit-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-testing-base-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-testing-junit-platform-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-testing-jvm-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-testing-native-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-tooling-api-builders-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-version-control-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/gradle-workers-4.9.jar" />
+                  <option value="C:/ProgramData/chocolatey/lib/gradle/tools/gradle-4.9/lib/plugins/ivy-2.2.0.jar" />
+>>>>>>> master
                 </list>
               </option>
             </ExternalProjectBuildClasspathPojo>
@@ -511,16 +655,21 @@
     </option>
     <option name="projectSyncType">
       <map>
+<<<<<<< HEAD
         <entry key="$USER_HOME$/Desktop/pubg-api-client-master" value="PREVIEW" />
         <entry key="$USER_HOME$/Downloads/pubg-api-client-master" value="PREVIEW" />
         <entry key="$PROJECT_DIR$" value="PREVIEW" />
         <entry key="$PROJECT_DIR$/../pubg-api-client" value="PREVIEW" />
+=======
+        <entry key="$PROJECT_DIR$/../../pubg-api-client-master" value="PREVIEW" />
+>>>>>>> master
       </map>
     </option>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+<<<<<<< HEAD
         <option value="$PROJECT_DIR$/.gitignore/.gitignore" />
       </list>
     </option>
@@ -531,11 +680,30 @@
     <option name="width" value="1936" />
     <option name="height" value="1016" />
   </component>
+=======
+        <option value="$PROJECT_DIR$/src/main/java/Main.java" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="-967" />
+    <option name="width" value="974" />
+    <option name="height" value="1047" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+>>>>>>> master
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+<<<<<<< HEAD
       <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
@@ -579,11 +747,24 @@
         </subPane>
       </pane>
       <pane id="Scope" />
+=======
+      <pane id="Scope" />
+      <pane id="AndroidView" />
+      <pane id="ProjectPane" />
+>>>>>>> master
       <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
+<<<<<<< HEAD
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1539213859866" />
+=======
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+>>>>>>> master
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -602,6 +783,7 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
+<<<<<<< HEAD
       <changelist id="8d07c9ef-2569-43ca-be74-a6b6406d69cc" name="Default Changelist" comment="" />
       <created>1539213625063</created>
       <option name="number" value="Default" />
@@ -625,6 +807,37 @@
       <window_info anchor="bottom" id="Terminal" />
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
       <window_info anchor="bottom" id="Build" visible="true" weight="0.32925472" />
+=======
+      <changelist id="b5b5c1db-11dd-43a6-bf96-dfb60564be07" name="Default Changelist" comment="" />
+      <created>1539214428354</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1539214428354</updated>
+      <workItem from="1539214429820" duration="173000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="173000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-967" y="0" width="974" height="1047" extended-state="0" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Designer" />
+      <window_info id="Image Layers" />
+      <window_info id="UI Designer" />
+      <window_info id="Favorites" side_tool="true" />
+      <window_info id="Capture Tool" />
+      <window_info id="Learn" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24945295" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Build" visible="true" weight="0.32932165" />
+      <window_info anchor="bottom" id="Terminal" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="bottom" id="Database Changes" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" />
+>>>>>>> master
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" />
@@ -633,22 +846,39 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="right" id="Palette" />
+<<<<<<< HEAD
       <window_info anchor="right" id="Gradle" />
       <window_info anchor="right" id="Theme Preview" />
       <window_info anchor="right" id="Capture Analysis" />
       <window_info anchor="right" id="Palette&#9;" />
       <window_info anchor="right" id="Maven Projects" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+=======
+      <window_info anchor="right" id="Capture Analysis" />
+      <window_info anchor="right" id="Maven Projects" />
+      <window_info anchor="right" id="Gradle" />
+      <window_info anchor="right" id="Database" />
+      <window_info anchor="right" id="Palette&#9;" />
+      <window_info anchor="right" id="Theme Preview" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+>>>>>>> master
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
   </component>
+<<<<<<< HEAD
+=======
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+>>>>>>> master
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/main/java/Main.java">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="51">
           <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
         </state>
@@ -658,6 +888,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="314">
           <caret line="27" lean-forward="true" selection-start-line="27" selection-end-line="27" />
+=======
+        <state relative-caret-position="85">
+          <caret line="56" column="49" selection-start-line="56" selection-start-column="49" selection-end-line="56" selection-end-column="49" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+>>>>>>> master
         </state>
       </provider>
     </entry>
