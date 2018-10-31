@@ -10,6 +10,7 @@ import java.util.Random;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
+import java.util.Vector;
 
 
 public class Main extends ListenerAdapter {
@@ -44,16 +45,28 @@ public class Main extends ListenerAdapter {
         String strat[] = new String[]{"Fast and Loose", "Hyper-aggressive","Mounted Combat", "Play It Safe", "Slow and Steady", "Run and Gun", "Grenadier's Gamble", "Shorts and Shotties", "Long-Range Overwatch", "Amphibious Assault", "Have Gay Sex", "Breach and Clear", "Chase All Shots", "Hold the High Ground", "Hold the Low Ground", "Hold Down the Fort", "Crates are Key", "Stay on the Roads", "Spread Out", "Keep Friends Close","Make 'em Bleed","Use your Fuckin' Brains, Retards","Mountain Goat"};
         int maxLoc = loc.length;
         int STRATNUM = strat.length;
+        Vector help;
+        help = new Vector();
 
+        help.add("!ping");
+        if (messageText.equals("!ping")) {
+            event.getChannel().sendMessage("Pong!").queue();
+        }
+
+        help.add("!win");
         if (event.getMessage().getContentRaw().equals("!win")) {
             exportWinningDropImage();
             event.getChannel().sendMessage("Winning coordinates have been saved!").queue();
         }
 
-        if (messageText.equals("!ping")) {
-            event.getChannel().sendMessage("Pong!").queue();
+        help.add("!strategy");
+        if (messageText.toLowerCase().equals("!strategy")) {
+            int strategy = rand.nextInt(STRATNUM);
+            String message1 = "Optimal Strategy: " + strat[strategy];
+            event.getChannel().sendMessage(message1).queue();
         }
 
+        help.add("!drop (e,m,s) OR !");
         if (messageText.toLowerCase().contains("!drop")|| messageText.toLowerCase().equals("!")) {
             String cmdSplit[] = messageText.split(" ", 2);
             BufferedImage img;
@@ -77,11 +90,13 @@ public class Main extends ListenerAdapter {
             }
             generateDropPositionImage(img);
             event.getChannel().sendFile(writeOutputFile(img)).queue();
-        } else if (messageText.toLowerCase().contains("/strategy")) {
-            int strategy = rand.nextInt(STRATNUM);
-            String message1 = "Optimal Strategy: " + strat[strategy];
-            event.getChannel().sendMessage(message1).queue();
         }
+
+        help.add("!help");
+        if (messageText.toLowerCase().equals("!help")){
+            event.getChannel().sendMessage(help.toString()).queue();
+        }
+
     }
 
     private BufferedImage getImageFromResource(String image) {
