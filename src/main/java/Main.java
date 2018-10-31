@@ -27,6 +27,7 @@ public class Main extends ListenerAdapter {
         builder.buildAsync();
     }
 
+    //TODO Remove strings and shit from onMessageReceived so everything doesn't get run everytime a message is received.
     @Override
     public void onMessageReceived(MessageReceivedEvent event){
 
@@ -39,7 +40,9 @@ public class Main extends ListenerAdapter {
             return;
         }
 
+        //Message Text, already raw and lowercase
         String messageText = event.getMessage().getContentRaw().toLowerCase();
+
         String loc[] = new String[]{"Cave","Bhan","Ha Tinh","Camp Alpha", "Ruins", "Tambang", "Na Kham", "Sahmee", "Camp Charlie", "Pai Nan", "Ban Tai", "Bootcamp", "Paradise Resort", "Tat Mok", "Khao", "Mongnai", "Camp Bravo", "Quarry", "Lakawi", "Kampong", "Docks"};
         String rel[] = new String[]{"in", "close to"};
         String strat[] = new String[]{"Fast and Loose", "Hyper-aggressive","Mounted Combat", "Play It Safe", "Slow and Steady", "Run and Gun", "Grenadier's Gamble", "Shorts and Shotties", "Long-Range Overwatch", "Amphibious Assault", "Have Gay Sex", "Breach and Clear", "Chase All Shots", "Hold the High Ground", "Hold the Low Ground", "Hold Down the Fort", "Crates are Key", "Stay on the Roads", "Spread Out", "Keep Friends Close","Make 'em Bleed","Use your Fuckin' Brains, Retards","Mountain Goat"};
@@ -54,20 +57,20 @@ public class Main extends ListenerAdapter {
         }
 
         help.add("!win");
-        if (event.getMessage().getContentRaw().equals("!win")) {
+        if (messageText.equals("!win")) {
             exportWinningDropImage();
             event.getChannel().sendMessage("Winning coordinates have been saved!").queue();
         }
 
         help.add("!strategy");
-        if (messageText.toLowerCase().equals("!strategy")) {
+        if (messageText.equals("!strategy")) {
             int strategy = rand.nextInt(STRATNUM);
             String message1 = "Optimal Strategy: " + strat[strategy];
             event.getChannel().sendMessage(message1).queue();
         }
 
         help.add("!drop (e,m,s) OR !");
-        if (messageText.toLowerCase().contains("!drop")|| messageText.toLowerCase().equals("!")) {
+        if (messageText.contains("!drop")|| messageText.equals("!")) {
             String cmdSplit[] = messageText.split(" ", 2);
             BufferedImage img;
             if (cmdSplit.length != 2) {
@@ -93,7 +96,7 @@ public class Main extends ListenerAdapter {
         }
 
         help.add("!help");
-        if (messageText.toLowerCase().equals("!help")){
+        if (messageText.equals("!help")){
             event.getChannel().sendMessage(help.toString()).queue();
         }
 
