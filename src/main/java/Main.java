@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import javax.imageio.ImageIO;
 import javax.security.auth.login.LoginException;
+import java.util.ArrayList;
 import java.util.Random;
 
 import java.awt.*;
@@ -15,10 +16,17 @@ import java.util.Vector;
 
 public class Main extends ListenerAdapter {
 
-    private String tempDir = System.getProperty("java.io.tmpdir");
-    private Point currentCoordinates = new Point();
-    private Random rand = new Random();
+    private String tempDir = System.getProperty("java.io.tmpdir"); //Stores output images?
+    private Point currentCoordinates = new Point(); //Stores Current Point for win recording
+    private Random rand = new Random(); //Random generator for coordinate generation
 
+    //Stuff for Strategy generation. pulled out so it doesn't rerun every time a message is received
+    private String strat[] = new String[]{"Fast and Loose", "Hyper-aggressive","Mounted Combat", "Play It Safe", "Slow and Steady", "Run and Gun", "Grenadier's Gamble", "Shorts and Shotties", "Long-Range Overwatch", "Amphibious Assault", "Have Gay Sex", "Breach and Clear", "Chase All Shots", "Hold the High Ground", "Hold the Low Ground", "Hold Down the Fort", "Crates are Key", "Stay on the Roads", "Spread Out", "Keep Friends Close","Make 'em Bleed","Use your Fuckin' Brains, Retards","Mountain Goat"};
+    private int STRATNUM = strat.length;
+
+    private ArrayList<String> help = new ArrayList<String>(10); //ArrayList to store command list
+
+    //Logs bot into discord
     public static void main(String[] args) throws LoginException {
         JDABuilder builder = new JDABuilder(AccountType.BOT);
         String token = "NDc0MzAzNDE2ODkwNTU2NDI2.DkOh9A.f6ssNPyNX2-ygwaP5MHj5yVxvTY";
@@ -27,15 +35,17 @@ public class Main extends ListenerAdapter {
         builder.buildAsync();
     }
 
-    //TODO Remove strings and shit from onMessageReceived so everything doesn't get run everytime a message is received.
+    //Bot responses to messages
     @Override
     public void onMessageReceived(MessageReceivedEvent event){
 
+        //Outputs message author and content to terminal
         System.out.println("We received a message from " +
                 event.getAuthor().getName() + ": " +
                 event.getMessage().getContentDisplay()
         );
 
+        //Ignores message if the author is a bot
         if (event.getAuthor().isBot()) {
             return;
         }
@@ -43,25 +53,20 @@ public class Main extends ListenerAdapter {
         //Message Text, already raw and lowercase
         String messageText = event.getMessage().getContentRaw().toLowerCase();
 
-        String loc[] = new String[]{"Cave","Bhan","Ha Tinh","Camp Alpha", "Ruins", "Tambang", "Na Kham", "Sahmee", "Camp Charlie", "Pai Nan", "Ban Tai", "Bootcamp", "Paradise Resort", "Tat Mok", "Khao", "Mongnai", "Camp Bravo", "Quarry", "Lakawi", "Kampong", "Docks"};
-        String rel[] = new String[]{"in", "close to"};
-        String strat[] = new String[]{"Fast and Loose", "Hyper-aggressive","Mounted Combat", "Play It Safe", "Slow and Steady", "Run and Gun", "Grenadier's Gamble", "Shorts and Shotties", "Long-Range Overwatch", "Amphibious Assault", "Have Gay Sex", "Breach and Clear", "Chase All Shots", "Hold the High Ground", "Hold the Low Ground", "Hold Down the Fort", "Crates are Key", "Stay on the Roads", "Spread Out", "Keep Friends Close","Make 'em Bleed","Use your Fuckin' Brains, Retards","Mountain Goat"};
-        int maxLoc = loc.length;
-        int STRATNUM = strat.length;
-        Vector help;
-        help = new Vector();
-
+        //OG Test if Bot is working
         help.add("!ping");
         if (messageText.equals("!ping")) {
             event.getChannel().sendMessage("Pong!").queue();
         }
 
+        //Stores winning map image AND winning coordinates in file
         help.add("!win");
         if (messageText.equals("!win")) {
             exportWinningDropImage();
             event.getChannel().sendMessage("Winning coordinates have been saved!").queue();
         }
 
+        //Outputs random strategy to discord
         help.add("!strategy");
         if (messageText.equals("!strategy")) {
             int strategy = rand.nextInt(STRATNUM);
@@ -69,6 +74,7 @@ public class Main extends ListenerAdapter {
             event.getChannel().sendMessage(message1).queue();
         }
 
+        //Generates random drop on chosen map and outputs file in discord
         help.add("!drop (e,m,s) OR !");
         if (messageText.contains("!drop")|| messageText.equals("!")) {
             String cmdSplit[] = messageText.split(" ", 2);
@@ -95,6 +101,7 @@ public class Main extends ListenerAdapter {
             event.getChannel().sendFile(writeOutputFile(img)).queue();
         }
 
+        //Outputs command list to discord
         help.add("!help");
         if (messageText.equals("!help")){
             event.getChannel().sendMessage(help.toString()).queue();
