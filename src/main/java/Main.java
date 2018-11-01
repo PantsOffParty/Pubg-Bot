@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import javax.imageio.ImageIO;
 import javax.security.auth.login.LoginException;
+import java.util.ArrayList;
 import java.util.Random;
 
 import java.awt.*;
@@ -43,13 +44,14 @@ public class Main extends ListenerAdapter {
         //Message Text, already raw and lowercase
         String messageText = event.getMessage().getContentRaw().toLowerCase();
 
-        String loc[] = new String[]{"Cave","Bhan","Ha Tinh","Camp Alpha", "Ruins", "Tambang", "Na Kham", "Sahmee", "Camp Charlie", "Pai Nan", "Ban Tai", "Bootcamp", "Paradise Resort", "Tat Mok", "Khao", "Mongnai", "Camp Bravo", "Quarry", "Lakawi", "Kampong", "Docks"};
-        String rel[] = new String[]{"in", "close to"};
+        //Deprecated
+        //String loc[] = new String[]{"Cave","Bhan","Ha Tinh","Camp Alpha", "Ruins", "Tambang", "Na Kham", "Sahmee", "Camp Charlie", "Pai Nan", "Ban Tai", "Bootcamp", "Paradise Resort", "Tat Mok", "Khao", "Mongnai", "Camp Bravo", "Quarry", "Lakawi", "Kampong", "Docks"};
+        //String rel[] = new String[]{"in", "close to"};
+        // int maxLoc = loc.length;
         String strat[] = new String[]{"Fast and Loose", "Hyper-aggressive","Mounted Combat", "Play It Safe", "Slow and Steady", "Run and Gun", "Grenadier's Gamble", "Shorts and Shotties", "Long-Range Overwatch", "Amphibious Assault", "Have Gay Sex", "Breach and Clear", "Chase All Shots", "Hold the High Ground", "Hold the Low Ground", "Hold Down the Fort", "Crates are Key", "Stay on the Roads", "Spread Out", "Keep Friends Close","Make 'em Bleed","Use your Fuckin' Brains, Retards","Mountain Goat"};
-        int maxLoc = loc.length;
         int STRATNUM = strat.length;
-        Vector help;
-        help = new Vector();
+
+        ArrayList<String> help = new ArrayList<String>(10);
 
         help.add("!ping");
         if (messageText.equals("!ping")) {
