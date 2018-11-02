@@ -26,7 +26,8 @@ usage.statistics.xml
 tasks.xml
 .iml
 .idea/modules.xml
-gradle.xml
+.idea/gradle.xml
+.idea/misc.xml
 .idea/libraries
 token.txt
 out/
