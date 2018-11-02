@@ -36,7 +36,14 @@ public class Main extends ListenerAdapter {
     //Logs bot into discord
     public static void main(String[] args) throws LoginException {
         JDABuilder builder = new JDABuilder(AccountType.BOT);
-        String token = "NDc0MzAzNDE2ODkwNTU2NDI2.DkOh9A.f6ssNPyNX2-ygwaP5MHj5yVxvTY";
+        File file = new File("token.txt");
+        Scanner sc = null;
+        try {
+            sc = new Scanner(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        String token = sc.next();
         builder.setToken(token);
         builder.addEventListener(new Main());
         builder.buildAsync();
