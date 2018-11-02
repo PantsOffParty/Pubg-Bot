@@ -14,15 +14,37 @@ import java.io.*;
 
 public class Main extends ListenerAdapter {
 
-    private String tempDir = System.getProperty("java.io.tmpdir"); //Stores output images
+    private final String tempDir = System.getProperty("java.io.tmpdir"); //Stores output images
     private Point currentCoordinates = new Point(); //Stores Current Point for win recording
-    private Random rand = new Random(); //Random generator for coordinate generation
+    private final Random rand = new Random(); //Random generator for coordinate generation
 
     //Stuff for Strategy generation. pulled out so it doesn't rerun every time a message is received
-    private String strat[] = new String[]{"Fast and Loose", "Hyper-aggressive","Mounted Combat", "Play It Safe", "Slow and Steady", "Run and Gun", "Grenadier's Gamble", "Shorts and Shotties", "Long-Range Overwatch", "Amphibious Assault", "Have Gay Sex", "Breach and Clear", "Chase All Shots", "Hold the High Ground", "Hold the Low Ground", "Hold Down the Fort", "Crates are Key", "Stay on the Roads", "Spread Out", "Keep Friends Close","Make 'em Bleed","Use your Fuckin' Brains, Retards","Mountain Goat"};
-    private int STRATNUM = strat.length;
+    private final String[] strat = new String[]{"Fast and Loose",
+            "Hyper-aggressive",
+            "Mounted Combat",
+            "Play It Safe",
+            "Slow and Steady",
+            "Run and Gun",
+            "Grenadier's Gamble",
+            "Shorts and Shotties",
+            "Long-Range Overwatch",
+            "Amphibious Assault",
+            "Have Gay Sex",
+            "Breach and Clear",
+            "Chase All Shots",
+            "Hold the High Ground",
+            "Hold the Low Ground",
+            "Hold Down the Fort",
+            "Crates are Key",
+            "Stay on the Roads",
+            "Spread Out",
+            "Keep Friends Close",
+            "Make 'em Bleed",
+            "Use your Fuckin' Brains, Retards",
+            "Mountain Goat"};
 
-    private static final Map<String, String> helpMap; //Map to store command list
+    private final int STRATNUM = strat.length;
+    private static Map<String, String> helpMap; //Map to store command list
     static
     {
         helpMap = new HashMap<>();
@@ -43,6 +65,7 @@ public class Main extends ListenerAdapter {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        assert sc != null;
         String token = sc.next();
         builder.setToken(token);
         builder.addEventListener(new Main());
@@ -171,6 +194,7 @@ public class Main extends ListenerAdapter {
         File export = new File(System.getenv("USERPROFILE") +
                 "\\desktop\\PUBGWin-X" + currentCoordinates.getX() + "-Y" + currentCoordinates.getY() + ".jpg");
 
+        //noinspection ResultOfMethodCallIgnored
         winningStart.renameTo(export);
     }
 }
