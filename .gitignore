@@ -21,6 +21,13 @@
 
 workspace.xml
 /out/
+#R
+usage.statistics.xml
+tasks.xml
+.iml
+.idea/modules.xml
+gradle.xml
+.idea/libraries
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
