@@ -21,6 +21,16 @@
 
 workspace.xml
 /out/
+#R
+usage.statistics.xml
+tasks.xml
+.iml
+.idea/modules.xml
+.idea/gradle.xml
+.idea/misc.xml
+.idea/libraries
+token.txt
+out/
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
@@ -40,3 +50,6 @@ gradle-app.setting
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
+\.idea/misc\.xml
+
+\.idea/modules/
