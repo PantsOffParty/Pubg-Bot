@@ -16,6 +16,8 @@ TODO Add confirmation check to win
 TODO Turn map marking into a method called by drop and allwin
 TODO break if message received into function calls and methods
 TODO Add documentation to everything
+TODO FIX COLOR SELECTION!?!?!
+TODO Fix random color generation in dropPosition overload 3
 */
 public class DiscordBotMessageHandler extends ListenerAdapter {
 
@@ -125,9 +127,9 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
         //Generates random drop on chosen map and outputs file in discord
         if (messageText.contains("!drop") || messageText.equals("!")) {
-            String cmdSplit[] = messageText.split(" ", 2);
+            String cmdSplit[] = messageText.split(" ", 3);
             BufferedImage img;
-            if (cmdSplit.length != 2 || messageText.equals("!")) {
+            if (cmdSplit.length ==1 || messageText.equals("!")) {
                 img = getImageFromResource("PUBGMAP1.jpg");
                 currentMap = 's';
             } else {
@@ -151,7 +153,13 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 }
             }
             assert img != null;
-            generateDropPositionImage(img);
+
+            if (cmdSplit.length == 3) {
+                int dropCount = Integer.parseInt(cmdSplit[2]);
+                generateDropPositionImage(img, dropCount);
+            }
+            else
+                generateDropPositionImage(img);
             event.getChannel().sendFile(writeOutputFile(img)).queue();
         }
 
@@ -227,6 +235,32 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         graphics2D.drawString("x", x, y);
     }
 
+    //Overloaded version for Multiple Drops
+    private void generateDropPositionImage(BufferedImage image, int optionCount) {
+        int imgH = image.getHeight();
+        int imgW = image.getWidth();
+
+        for (int i = 0; i < optionCount; i++) {
+            while (true) {
+                int x = rand.nextInt(imgW);
+                int y = rand.nextInt(imgH);
+                int red = rand.nextInt(256);
+                int blue = rand.nextInt(256-red);
+                int green = rand.nextInt(256-red-blue);
+                Color c = new Color(red,green,blue);
+
+                int color = image.getRGB(x, y);
+                if (color > -1450000 && color < -1400000) {
+                    Graphics2D graphics2D = image.createGraphics();
+                    graphics2D.setFont(new Font("Ariel", Font.PLAIN, 50));
+                    graphics2D.setColor(c);
+                    graphics2D.drawString("x", x, y);
+                    currentCoordinates.setLocation(x, y);
+                    break;
+                }
+            }
+        }
+    }
     //Outputs given image to tempdir
     private File writeOutputFile(BufferedImage imageToOutput) {
         File outputFile = new File(tempDir + "PUBGMAPEDIT.jpg");
