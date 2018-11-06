@@ -1,6 +1,6 @@
 public class Main {
 
-    //Logs bot into discord
+    //Runs discord bot object
     public static void main(String[] args) {
         new DiscordBotMessageHandler();
     }
