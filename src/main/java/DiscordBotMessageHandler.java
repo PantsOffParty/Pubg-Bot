@@ -250,14 +250,17 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 Color c = new Color(red,green,blue);
 
                 int color = image.getRGB(x, y);
-                if (color > -1450000 && color < -1400000) {
+                // if (color > -1450000 && color < -1400000) {
                     Graphics2D graphics2D = image.createGraphics();
                     graphics2D.setFont(new Font("Ariel", Font.PLAIN, 50));
-                    graphics2D.setColor(c);
-                    graphics2D.drawString("x", x, y);
+                    //graphics2D.setColor(c);
+                    graphics2D.setColor(new Color(color)); //Garbage
+                    // graphics2D.drawString("x", x, y);
+                    String string = color + " "; //Garbage
+                    graphics2D.drawString(string ,x,y); //Garbage
                     currentCoordinates.setLocation(x, y);
                     break;
-                }
+
             }
         }
     }
@@ -307,6 +310,8 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         String mapFileName;
         String mapImageName;
         BufferedImage image;
+
+        //Sets map and gets file
         switch (mapKey) {
             case "e":
                 mapFileName = "WinCoordinatesErangel";
@@ -325,6 +330,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         BufferedReader br = new BufferedReader(new FileReader(System.getenv("USERPROFILE") +
                 "\\desktop\\" + mapFileName + ".txt"));
 
+        //Read in coords from file and add to image
         for (String line; (line = br.readLine()) != null; )
         {
             List<String> x_y_coords = Arrays.asList(line.split(","));
