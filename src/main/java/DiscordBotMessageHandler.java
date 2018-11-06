@@ -11,6 +11,10 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
+/*TODO Add multiple functionality to drop
+TODO break if message received into function calls and methods
+TODO Add documentation to everything
+*/
 public class DiscordBotMessageHandler extends ListenerAdapter {
 
     private final String tempDir = System.getProperty("java.io.tmpdir"); //Stores output images
