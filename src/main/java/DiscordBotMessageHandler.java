@@ -158,9 +158,11 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 int dropCount = Integer.parseInt(cmdSplit[2]);
                 generateDropPositionImage(img, dropCount);
             }
-            else
-                generateDropPositionImage(img);
-            event.getChannel().sendFile(writeOutputFile(img)).queue();
+            else {
+                int dropCount = 1;
+                generateDropPositionImage(img, dropCount);
+            }
+                event.getChannel().sendFile(writeOutputFile(img)).queue();
         }
 
         //Regurgitate all winning coordinates for a given map
@@ -204,28 +206,6 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         }
     }
 
-    //Generates random coords that falls within a specified value and marks the spot on the given image
-    private void generateDropPositionImage(BufferedImage image) {
-        int imgH = image.getHeight();
-        int imgW = image.getWidth();
-
-        while (true)
-        {
-            int x = rand.nextInt(imgW);
-            int y = rand.nextInt(imgH);
-
-            int color = image.getRGB(x, y);
-            if (color > -1450000 && color < -1400000)
-            {
-                Graphics2D graphics2D = image.createGraphics();
-                graphics2D.setFont(new Font("Ariel", Font.PLAIN, 50));
-                graphics2D.setColor(Color.RED);
-                graphics2D.drawString("x", x, y);
-                currentCoordinates.setLocation(x, y);
-                break;
-            }
-        }
-    }
 
     //Overloaded Version that generates an image with given coords marked NOT RANDOM
     private void generateDropPositionImage(BufferedImage image, int x, int y){
@@ -249,17 +229,18 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 int green = rand.nextInt(256-red-blue);
                 Color c = new Color(red,green,blue);
 
-                int color = image.getRGB(x, y);
-                // if (color > -1450000 && color < -1400000) {
+                int colorRGB = image.getRGB(x, y);
+                Color color = new Color(colorRGB);
+                Color trueRed = Color.red;
+
+                if ((color.getBlue() <= color.getRed() && color.getBlue() <= color.getGreen() && !color.equals(c)) || (color.getBlue() <= 50 && color.getGreen() <= 50 && color.getRed() >=20 && !color.equals(c))) {
                     Graphics2D graphics2D = image.createGraphics();
                     graphics2D.setFont(new Font("Ariel", Font.PLAIN, 50));
-                    //graphics2D.setColor(c);
-                    graphics2D.setColor(new Color(color)); //Garbage
-                    // graphics2D.drawString("x", x, y);
-                    String string = color + " "; //Garbage
-                    graphics2D.drawString(string ,x,y); //Garbage
+                    graphics2D.setColor(c);
+                    graphics2D.drawString("x", x, y);
                     currentCoordinates.setLocation(x, y);
                     break;
+                }
 
             }
         }
