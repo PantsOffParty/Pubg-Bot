@@ -134,6 +134,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         if (messageText.equals("!win")) {
             event.getChannel().sendMessage(" (Y,N) - Confirm you want to save a win at coordinates (" +
                     currentCoordinates.getX() + ", " + currentCoordinates.getY() +  ")").queue();
+            event.getChannel().sendFile(getLastOutputFile()).queue();
             waitingForWinConfirmation = true;
         }
 
@@ -228,9 +229,14 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
     //Overloaded Version that generates an image with given coords marked NOT RANDOM
     private void generateDropPositionImage(BufferedImage image, int x, int y){
+        int red = rand.nextInt(256);
+        int blue = rand.nextInt(256-red);
+        int green = rand.nextInt(256-red-blue);
+        Color c = new Color(red,green,blue);
+
         Graphics2D graphics2D = image.createGraphics();
         graphics2D.setFont(new Font("Ariel", Font.PLAIN, 50));
-        graphics2D.setColor(Color.RED);
+        graphics2D.setColor(c);
         graphics2D.drawString("x", x, y);
     }
 
@@ -270,6 +276,10 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             e.printStackTrace();
         }
         return outputFile;
+    }
+
+    private File getLastOutputFile() {
+        return new File(tempDir + "PUBGMAPEDIT.jpg");
     }
 
     //Outputs current coords to the given map file
