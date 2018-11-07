@@ -11,12 +11,9 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
-/*TODO Add multiple functionality to drop
-TODO Add confirmation check to win
-TODO Turn map marking into a method called by drop and allwin
+/*
 TODO break if message received into function calls and methods
 TODO Add documentation to everything
-TODO FIX COLOR SELECTION!?!?!
 TODO Fix random color generation in dropPosition overload 3
 */
 public class DiscordBotMessageHandler extends ListenerAdapter {
@@ -26,9 +23,10 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     private Point currentCoordinates = new Point(); //Stores Current Point for win recording
     private char currentMap = ' ';  //Stores current map character
     private Random rand = new Random(); //Random generator for coordinate generation
+    private boolean waitingForWinConfirmation = false; //Do we check to see if the next message is confirming a win
 
     //Stuff for Strategy generation. pulled out so it doesn't rerun every time a message is received
-    private final String[] strat = new String[]{"Fast and Loose",
+    private final String[] strat = new String[] {"Fast and Loose",
             "Hyper-aggressive",
             "Mounted Combat",
             "Play It Safe",
@@ -64,6 +62,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         helpMap.put("!drop (e,m,s) OR !", "Be given a random position to drop in the next round.");
         helpMap.put("!help", "View all possible bot commands.");
         helpMap.put("!allwin (e,m,s)", "Display a map of all starting coordinates that resulted in a win for a given map.");
+        helpMap.put("!stop", "Stops all instances of God Bot.");
     }
 
     DiscordBotMessageHandler()
@@ -107,15 +106,35 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         //Message Text, already raw and lowercase
         String messageText = event.getMessage().getContentRaw().toLowerCase();
 
+        //Stops all instances of God Bot
+        if (messageText.equals("!stop")){
+            event.getChannel().sendMessage("Shutting down...").queue();
+            System.exit(0);
+        }
+
+        //For confirming a !win command.
+        if (waitingForWinConfirmation)
+        {
+            waitingForWinConfirmation = false;
+            if (messageText.equals("y"))
+            {
+                exportWinningDropCoordinates();
+                event.getChannel().sendMessage("Winning coordinates have been saved!").queue();
+                return;
+            }
+            event.getChannel().sendMessage("No win confirmation was given.").queue();
+        }
+
         //OG Test if Bot is working
         if (messageText.equals("!ping")) {
             event.getChannel().sendMessage("Pong!").queue();
         }
 
-        //Stores winning coordinates in file
+        //Stores winning coordinates in file after confirmation
         if (messageText.equals("!win")) {
-            exportWinningDropCoordinates();
-            event.getChannel().sendMessage("Winning coordinates have been saved!").queue();
+            event.getChannel().sendMessage(" (Y,N) - Confirm you want to save a win at coordinates (" +
+                    currentCoordinates.getX() + ", " + currentCoordinates.getY() +  ")").queue();
+            waitingForWinConfirmation = true;
         }
 
         //Outputs random strategy to discord
@@ -231,17 +250,11 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
                 int colorRGB = image.getRGB(x, y);
                 Color color = new Color(colorRGB);
-                Color trueRed = Color.red;
-
                 if ((color.getBlue() <= color.getRed() && color.getBlue() <= color.getGreen() && !color.equals(c)) || (color.getBlue() <= 50 && color.getGreen() <= 50 && color.getRed() >=20 && !color.equals(c))) {
-                    Graphics2D graphics2D = image.createGraphics();
-                    graphics2D.setFont(new Font("Ariel", Font.PLAIN, 50));
-                    graphics2D.setColor(c);
-                    graphics2D.drawString("x", x, y);
+                    generateDropPositionImage(image, x, y);
                     currentCoordinates.setLocation(x, y);
                     break;
                 }
-
             }
         }
     }
