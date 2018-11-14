@@ -11,6 +11,8 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
+import static java.awt.Color.*;
+
 /*
 TODO break if message received into function calls and methods
 TODO Add documentation to everything
@@ -21,9 +23,11 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     //Class Variables
     private final String tempDir = System.getProperty("java.io.tmpdir"); //Stores output images
     private Point currentCoordinates = new Point(); //Stores Current Point for win recording
+    private List<Point> currentCoordinatesList = new ArrayList<>();
     private char currentMap = ' ';  //Stores current map character
     private Random rand = new Random(); //Random generator for coordinate generation
     private boolean waitingForWinConfirmation = false; //Do we check to see if the next message is confirming a win
+    private boolean waitingForColorSelection = false;
 
     //Stuff for Strategy generation. pulled out so it doesn't rerun every time a message is received
     private final String[] strat = new String[] {"Fast and Loose",
@@ -134,6 +138,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         if (messageText.equals("!win")) {
             event.getChannel().sendMessage(" (Y,N) - Confirm you want to save a win at coordinates (" +
                     currentCoordinates.getX() + ", " + currentCoordinates.getY() +  ")").queue();
+
             event.getChannel().sendFile(getLastOutputFile()).queue();
             waitingForWinConfirmation = true;
         }
@@ -182,7 +187,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 int dropCount = 1;
                 generateDropPositionImage(img, dropCount);
             }
-                event.getChannel().sendFile(writeOutputFile(img)).queue();
+            event.getChannel().sendFile(writeOutputFile(img)).queue();
         }
 
         //Regurgitate all winning coordinates for a given map
@@ -228,16 +233,14 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
 
     //Overloaded Version that generates an image with given coords marked NOT RANDOM
-    private void generateDropPositionImage(BufferedImage image, int x, int y){
-        int red = rand.nextInt(256);
-        int blue = rand.nextInt(256-red);
-        int green = rand.nextInt(256-red-blue);
-        Color c = new Color(red,green,blue);
+    private void generateDropPositionImage(BufferedImage image, int x, int y, int color){
+        List<Color> colors = Arrays.asList(RED, BLUE, GREEN, YELLOW, ORANGE, PINK, CYAN);
+        int xColor = (color < colors.size() - 1) ? color : color % colors.size();
 
         Graphics2D graphics2D = image.createGraphics();
         graphics2D.setFont(new Font("Ariel", Font.PLAIN, 50));
-        graphics2D.setColor(c);
-        graphics2D.drawString("x", x, y);
+        graphics2D.setColor(colors.get(xColor));
+        graphics2D.drawString(String.valueOf(color), x, y);
     }
 
     //Overloaded version for Multiple Drops
@@ -257,8 +260,9 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 int colorRGB = image.getRGB(x, y);
                 Color color = new Color(colorRGB);
                 if ((color.getBlue() <= color.getRed() && color.getBlue() <= color.getGreen() && !color.equals(c)) || (color.getBlue() <= 50 && color.getGreen() <= 50 && color.getRed() >=20 && !color.equals(c))) {
-                    generateDropPositionImage(image, x, y);
-                    currentCoordinates.setLocation(x, y);
+                    generateDropPositionImage(image, x, y, i);
+                    //currentCoordinates.setLocation(x, y);
+                    currentCoordinatesList.add(new Point(x, y));
                     break;
                 }
             }
@@ -342,7 +346,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             int y = (int) Double.parseDouble(x_y_coords.get(1));
 
             assert image != null;
-            generateDropPositionImage(image,x,y);
+            generateDropPositionImage(image,x,y, 0);
         }
         br.close();
         return image;
