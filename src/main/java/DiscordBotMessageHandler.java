@@ -11,6 +11,8 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
+import static java.awt.Color.*;
+
 /*
 TODO break if message received into function calls and methods
 TODO Add documentation to everything
@@ -21,9 +23,11 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     //Class Variables
     private final String tempDir = System.getProperty("java.io.tmpdir"); //Stores output images
     private Point currentCoordinates = new Point(); //Stores Current Point for win recording
+    private Map<String, Point> currentCoordinatesMap = new HashMap<>();
     private char currentMap = ' ';  //Stores current map character
     private Random rand = new Random(); //Random generator for coordinate generation
     private boolean waitingForWinConfirmation = false; //Do we check to see if the next message is confirming a win
+    private boolean waitingForCoordinatesSelection = false; //Multi drop win selection is active
 
     //Stuff for Strategy generation. pulled out so it doesn't rerun every time a message is received
     private final String[] strat = new String[] {"Fast and Loose",
@@ -125,6 +129,31 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             event.getChannel().sendMessage("No win confirmation was given.").queue();
         }
 
+        /*
+         * Select which coordinates to use when winning a multi drop.
+         */
+        if (waitingForCoordinatesSelection)
+        {
+            if (currentCoordinatesMap.keySet().contains(messageText))
+            {
+                currentCoordinates = currentCoordinatesMap.get(messageText);
+                exportWinningDropCoordinates();
+                waitingForCoordinatesSelection = false;
+                event.getChannel().sendMessage("Coordinates saved.").queue();
+                return;
+            }
+            else if (messageText.equals("!exit")) {
+                event.getChannel().sendMessage("No coordinate selection made.").queue();
+                waitingForCoordinatesSelection = false;
+                return;
+            }
+            else {
+                event.getChannel().
+                        sendMessage(messageText + " is not a valid selection. Try again or type !exit to cancel coordinate capture.").queue();
+                return;
+            }
+        }
+
         //OG Test if Bot is working
         if (messageText.equals("!ping")) {
             event.getChannel().sendMessage("Pong!").queue();
@@ -132,10 +161,17 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
         //Stores winning coordinates in file after confirmation
         if (messageText.equals("!win")) {
-            event.getChannel().sendMessage(" (Y,N) - Confirm you want to save a win at coordinates (" +
-                    currentCoordinates.getX() + ", " + currentCoordinates.getY() +  ")").queue();
-            event.getChannel().sendFile(getLastOutputFile()).queue();
-            waitingForWinConfirmation = true;
+            if (currentCoordinatesMap.size() == 1) {
+                currentCoordinates = currentCoordinatesMap.get("0");
+                event.getChannel().sendMessage(" (Y,N) - Confirm you want to save a win at coordinates (" +
+                        currentCoordinates.getX() + ", " + currentCoordinates.getY() +  ")").queue();
+                event.getChannel().sendFile(getLastOutputFile()).queue();
+                waitingForWinConfirmation = true;
+            } else {
+                event.getChannel().sendMessage("Which drop position would you like to save? " + currentCoordinatesMap.keySet()).queue();
+                //event.getChannel().sendFile(getLastOutputFile()).queue();
+                waitingForCoordinatesSelection = true;
+            }
         }
 
         //Outputs random strategy to discord
@@ -182,7 +218,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 int dropCount = 1;
                 generateDropPositionImage(img, dropCount);
             }
-                event.getChannel().sendFile(writeOutputFile(img)).queue();
+            event.getChannel().sendFile(writeOutputFile(img)).queue();
         }
 
         //Regurgitate all winning coordinates for a given map
@@ -228,16 +264,30 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
 
     //Overloaded Version that generates an image with given coords marked NOT RANDOM
-    private void generateDropPositionImage(BufferedImage image, int x, int y){
-        int red = rand.nextInt(256);
-        int blue = rand.nextInt(256-red);
-        int green = rand.nextInt(256-red-blue);
-        Color c = new Color(red,green,blue);
+    private void generateDropPositionImage(BufferedImage image, int x, int y, int color){
+        List<Color> colors = Arrays.asList(
+                RED,
+                BLUE.brighter().brighter(),
+                GREEN,
+                YELLOW,
+                ORANGE,
+                PINK,
+                CYAN);
+        int xColor = (color < colors.size()) ? color : color % colors.size();
 
         Graphics2D graphics2D = image.createGraphics();
         graphics2D.setFont(new Font("Ariel", Font.PLAIN, 50));
-        graphics2D.setColor(c);
-        graphics2D.drawString("x", x, y);
+        graphics2D.setColor(colors.get(xColor));
+        graphics2D.drawString(String.valueOf(color), x, y);
+    }
+
+    //Overload Image creation with any symbol we want
+    private void generateDropPositionImage(BufferedImage image, int x, int y, String mark){
+
+        Graphics2D graphics2D = image.createGraphics();
+        graphics2D.setFont(new Font("Ariel", Font.PLAIN, 80));
+        graphics2D.setColor(RED);
+        graphics2D.drawString(mark, x, y);
     }
 
     //Overloaded version for Multiple Drops
@@ -245,7 +295,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         int imgH = image.getHeight();
         int imgW = image.getWidth();
 
-        for (int i = 0; i < optionCount; i++) {
+        for (int i = 1; i < optionCount + 1; i++) {
             while (true) {
                 int x = rand.nextInt(imgW);
                 int y = rand.nextInt(imgH);
@@ -257,8 +307,9 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 int colorRGB = image.getRGB(x, y);
                 Color color = new Color(colorRGB);
                 if ((color.getBlue() <= color.getRed() && color.getBlue() <= color.getGreen() && !color.equals(c)) || (color.getBlue() <= 50 && color.getGreen() <= 50 && color.getRed() >=20 && !color.equals(c))) {
-                    generateDropPositionImage(image, x, y);
-                    currentCoordinates.setLocation(x, y);
+                    generateDropPositionImage(image, x, y, i);
+                    //currentCoordinates.setLocation(x, y);
+                    currentCoordinatesMap.put(String.valueOf(i), new Point(x, y));
                     break;
                 }
             }
@@ -278,6 +329,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         return outputFile;
     }
 
+    //Retrieve the last drop image
     private File getLastOutputFile() {
         return new File(tempDir + "PUBGMAPEDIT.jpg");
     }
@@ -342,7 +394,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             int y = (int) Double.parseDouble(x_y_coords.get(1));
 
             assert image != null;
-            generateDropPositionImage(image,x,y);
+            generateDropPositionImage(image,x,y, "x");
         }
         br.close();
         return image;
