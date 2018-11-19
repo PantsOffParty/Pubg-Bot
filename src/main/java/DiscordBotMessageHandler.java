@@ -17,6 +17,7 @@ import static java.awt.Color.*;
 TODO break if message received into function calls and methods
 TODO Add documentation to everything
 TODO Fix random color generation in dropPosition overload 3
+TODO PATHING 1.Color grab buildings 2.Lines between them
 */
 public class DiscordBotMessageHandler extends ListenerAdapter {
 
