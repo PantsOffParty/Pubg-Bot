@@ -16,7 +16,7 @@ import static java.awt.Color.*;
 /*
 TODO break if message received into function calls and methods
 TODO Add documentation to everything
-TODO Fix random color generation in dropPosition overload 3
+TODO Fix color selection. Again. Sanhokt only.
 TODO PATHING 1.Color grab buildings 2.Lines between them
 */
 public class DiscordBotMessageHandler extends ListenerAdapter {
@@ -29,6 +29,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     private Random rand = new Random(); //Random generator for coordinate generation
     private boolean waitingForWinConfirmation = false; //Do we check to see if the next message is confirming a win
     private boolean waitingForCoordinatesSelection = false; //Multi drop win selection is active
+    private Vector<Point> unvisitedBuildings = new Vector<>();
 
     //Stuff for Strategy generation. pulled out so it doesn't rerun every time a message is received
     private final String[] strat = new String[] {"Fast and Loose",
@@ -237,6 +238,41 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             }
         }
 
+        if(messageText.contains("!path"))
+        {
+            String cmdSplit[] = messageText.split(" ", 3);
+            BufferedImage img;
+
+            if (cmdSplit.length ==1 || messageText.equals("!")) {
+                img = getImageFromResource("PUBGMAP1.jpg");
+                currentMap = 's';
+            } else {
+                switch (cmdSplit[1]) {
+                    case "s":
+                        img = getImageFromResource("PUBGMAP1.jpg");
+                        currentMap = 's';
+                        break;
+                    case "m":
+                        img = getImageFromResource("PUBGMAP2.jpg");
+                        currentMap = 'm';
+                        break;
+                    case "e":
+                        img = getImageFromResource("PUBGMAP3.jpg");
+                        currentMap = 'e';
+                        break;
+                    default:
+                        img = getImageFromResource("PUBGMAP1.jpg");
+                        currentMap = 's';
+                        break;
+                }
+                assert img != null;
+            }
+
+                generatePathPositionImage(img);
+                event.getChannel().sendFile(writeOutputFile(img)).queue();
+            }
+
+
         //Outputs command list to discord
         if (messageText.equals("!help")) {
             StringBuilder messageToSend = new StringBuilder();
@@ -277,21 +313,21 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         int xColor = (color < colors.size()) ? color : color % colors.size();
 
         Graphics2D graphics2D = image.createGraphics();
-        graphics2D.setFont(new Font("Ariel", Font.PLAIN, 50));
+        graphics2D.setFont(new Font("Ariel", Font.PLAIN, 40));
         graphics2D.setColor(colors.get(xColor));
         graphics2D.drawString(String.valueOf(color), x, y);
     }
 
-    //Overload Image creation with any symbol we want
+    //Overload Image creation with any symbol we want not RANDOM
     private void generateDropPositionImage(BufferedImage image, int x, int y, String mark){
 
         Graphics2D graphics2D = image.createGraphics();
-        graphics2D.setFont(new Font("Ariel", Font.PLAIN, 80));
+        graphics2D.setFont(new Font("Ariel", Font.PLAIN, 30));
         graphics2D.setColor(RED);
         graphics2D.drawString(mark, x, y);
     }
 
-    //Overloaded version for Multiple Drops
+    //Overloaded version for Multiple drops. Used with every drop now.
     private void generateDropPositionImage(BufferedImage image, int optionCount) {
         int imgH = image.getHeight();
         int imgW = image.getWidth();
@@ -300,14 +336,10 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             while (true) {
                 int x = rand.nextInt(imgW);
                 int y = rand.nextInt(imgH);
-                int red = rand.nextInt(256);
-                int blue = rand.nextInt(256-red);
-                int green = rand.nextInt(256-red-blue);
-                Color c = new Color(red,green,blue);
 
                 int colorRGB = image.getRGB(x, y);
                 Color color = new Color(colorRGB);
-                if ((color.getBlue() <= color.getRed() && color.getBlue() <= color.getGreen() && !color.equals(c)) || (color.getBlue() <= 50 && color.getGreen() <= 50 && color.getRed() >=20 && !color.equals(c))) {
+                if ((color.getBlue() <= color.getRed() && color.getBlue() <= color.getGreen()) || (color.getBlue() <= 50 && color.getGreen() <= 50 && color.getRed() >=20)) {
                     generateDropPositionImage(image, x, y, i);
                     //currentCoordinates.setLocation(x, y);
                     currentCoordinatesMap.put(String.valueOf(i), new Point(x, y));
@@ -315,6 +347,40 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 }
             }
         }
+    }
+
+    //Version for pathing. Picks buildings, then builds paths between
+    private void generatePathPositionImage(BufferedImage image) {
+        int imgH = image.getHeight();
+        int imgW = image.getWidth();
+
+        //Marks every building on map and adds to set
+        for(int y=0; y<imgH;y++){
+         for(int x = 0; x<imgW;x++) {
+             int colorRGB = image.getRGB(x, y);
+             Color color = new Color(colorRGB);
+             if ((color.getRed() >= 150 && color.getGreen() >= 170 && color.getBlue() >= 170)) {
+                 Graphics2D graphics2D = image.createGraphics();
+                 graphics2D.setFont(new Font("Ariel", Font.PLAIN, 10));
+                 graphics2D.setColor(RED);
+                 graphics2D.drawString(".", x, y);
+                 Point myPoint = new Point(x, y);
+                 unvisitedBuildings.add(myPoint);
+             }
+         }
+        }
+
+        //Plots lines between every point in set
+        for(int i=0; i < unvisitedBuildings.size()-1; i++){
+            Graphics2D graphics2D = image.createGraphics();
+            int currX = unvisitedBuildings.get(i).x;
+            int currY = unvisitedBuildings.get(i).y;
+            int nextX = unvisitedBuildings.get(i+1).x;
+            int nextY = unvisitedBuildings.get(i+1).y;
+            graphics2D.setColor(BLUE);
+            graphics2D.drawLine(currX,currY,nextX,nextY);
+        }
+
     }
     //Outputs given image to tempdir
     private File writeOutputFile(BufferedImage imageToOutput) {
