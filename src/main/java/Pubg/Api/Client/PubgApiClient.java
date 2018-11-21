@@ -1,6 +1,8 @@
 package Pubg.Api.Client;
 
 import Pubg.Api.Models.Player;
+import Pubg.Api.Models.PlayerSeason.GameModeStats;
+import Pubg.Api.Models.PlayerSeason.PlayerSeason;
 import Pubg.Api.Models.Season.Season;
 import Util.ConfigHandler;
 import com.google.gson.Gson;
@@ -60,6 +62,31 @@ public class PubgApiClient {
             }
         }
         throw new Exception("No current season found.");
+    }
+
+    public PlayerSeason getPlayerSeason(String playerName) throws Exception
+    {
+        String playerId = getPlayerIdFromName(playerName);
+        String seasonId = getLatestSeasonId();
+        String urlPath = "players/" +
+                playerId +
+                "/seasons/" +
+                seasonId;
+
+        URL url = new URL(API_BASE_URL + urlPath);
+        activateConnection(url);
+        JsonObject playerSeasonJson = (JsonObject) parser.parse(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+        return new Gson().fromJson(playerSeasonJson.get("data"), PlayerSeason.class);
+    }
+
+    public GameModeStats getDuosStatsForPlayer(String playerName) throws Exception
+    {
+        return getPlayerSeason(playerName).getPlayerSeasonAttributes().getGameModeHandler().getDuos();
+    }
+
+    public GameModeStats getSquadsForPlayer(String playerName) throws Exception
+    {
+        return getPlayerSeason(playerName).getPlayerSeasonAttributes().getGameModeHandler().getSquads();
     }
 
     private void activateConnection(URL url) throws Exception
