@@ -1,3 +1,4 @@
+import Pubg.Api.Client.PubgApiClient;
 import Util.ConfigHandler;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
@@ -29,6 +30,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     private Random rand = new Random(); //Random generator for coordinate generation
     private boolean waitingForWinConfirmation = false; //Do we check to see if the next message is confirming a win
     private boolean waitingForCoordinatesSelection = false; //Multi drop win selection is active
+    private PubgApiClient apiClient = new PubgApiClient();
 
     //Stuff for Strategy generation. pulled out so it doesn't rerun every time a message is received
     private final String[] strat = new String[] {"Fast and Loose",
@@ -74,15 +76,6 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     {
         //Logs Bot into Discord and gets ready to receive Messages
         JDABuilder builder = new JDABuilder(AccountType.BOT);
-//        File file = new File("token.txt");
-//        Scanner sc = null;
-//        try {
-//            sc = new Scanner(file);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        assert sc != null;
-//        String token = sc.next();
         builder.setToken(ConfigHandler.getConfig("bot.token"));
         builder.addEventListener(this);
         try
@@ -109,7 +102,13 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         }
 
         //Message Text, already raw and lowercase
-        String messageText = event.getMessage().getContentRaw().toLowerCase();
+        //Unless being used for stats, then retain case
+        String messageText = "";
+        if (!event.getMessage().getContentRaw().toLowerCase().contains("!stats")) {
+            messageText = event.getMessage().getContentRaw().toLowerCase();
+        } else {
+            messageText = event.getMessage().getContentRaw();
+        }
 
         //Stops all instances of God Bot
         if (messageText.equals("!stop")){
@@ -247,6 +246,37 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                         .append("\n");
             }
             event.getChannel().sendMessage(messageToSend.toString()).queue();
+        }
+
+        /*
+         * TODO Fix this to handle bad inputs
+         * Prints the stats for a gametype and player name (Case Sensitive)
+         */
+        if (messageText.contains("!stats")) {
+            String gameType = messageText.split(" ")[1];
+            String playerName = messageText.split(" ")[2];
+            String output = "";
+
+            if (gameType.equals("duos"))
+            {
+                try
+                {
+                    output = apiClient.getDuosStatsForPlayer(playerName).toString();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            } else if (gameType.equals("squads"))
+            {
+                try
+                {
+                    output = apiClient.getSquadsForPlayer(playerName).toString();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            event.getChannel().sendMessage(output).queue();
         }
     }
 
