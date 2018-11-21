@@ -1,4 +1,5 @@
 import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
+import Util.ConfigHandler;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -78,16 +79,16 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     {
         //Logs Bot into Discord and gets ready to receive Messages
         JDABuilder builder = new JDABuilder(AccountType.BOT);
-        File file = new File("token.txt");
-        Scanner sc = null;
-        try {
-            sc = new Scanner(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        assert sc != null;
-        String token = sc.next();
-        builder.setToken(token);
+//        File file = new File("token.txt");
+//        Scanner sc = null;
+//        try {
+//            sc = new Scanner(file);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        assert sc != null;
+//        String token = sc.next();
+        builder.setToken(ConfigHandler.getConfig("bot.token"));
         builder.addEventListener(this);
         try
         {

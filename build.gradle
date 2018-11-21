@@ -19,6 +19,7 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile 'net.dv8tion:JDA:3.7.1_387'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
 }
 
 task fatJar(type: Jar) {
