@@ -1,5 +1,4 @@
 import Pubg.Api.Client.PubgApiClient;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import Util.ConfigHandler;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
@@ -21,6 +20,7 @@ TODO break if message received into function calls and methods
 TODO Add documentation to everything
 TODO Fix color selection. Again. Sanhokt only.
 TODO PATHING 1.Color grab buildings 2.Lines between them
+TODO Pubg API - Do something useful with stats
 */
 public class DiscordBotMessageHandler extends ListenerAdapter {
 
@@ -248,7 +248,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             String cmdSplit[] = messageText.split(" ", 3);
             BufferedImage img;
 
-            if (cmdSplit.length ==1 || messageText.equals("!")) {
+            if (cmdSplit.length == 1 || messageText.equals("!")) {
                 img = getImageFromResource("PUBGMAP1.jpg");
                 currentMap = 's';
             } else {
@@ -404,21 +404,21 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         //Setting min and max coords for plotting around a drop site
         Point currentCoords = currentCoordinatesMap.get("1");
         int distance = 200; //Distance in pixels of the area to search in
-        int startX = currentCoords.x - distance/2;
-        int startY = currentCoords.y - distance/2;
-        if (startX<0) startX=0;
-        if(startY< 0) startY = 0;
-        int maxX = currentCoords.x + distance/2;
-        int maxY = currentCoords.y + distance/2;
-        if (maxX >imgW) maxX=imgW;
+        int startX = currentCoords.x - distance / 2;
+        int startY = currentCoords.y - distance / 2;
+        if (startX <0) startX = 0;
+        if(startY < 0) startY = 0;
+        int maxX = currentCoords.x + distance / 2;
+        int maxY = currentCoords.y + distance / 2;
+        if (maxX > imgW) maxX = imgW;
         if(maxY > imgH) maxY = imgH;
 
         //Marks every building on map and adds to set
 //Uncommenting this makes path run for the entire map
-//        for(int y=0; y<imgH;y++){
-//            for(int x = 0; x<imgW;x++) {
-        for(int y=startY; y<maxY;y++){
-         for(int x = startX; x<maxX;x++) {
+//        for(int y=0; y < imgH; y++){
+//            for(int x = 0; x < imgW; x++) {
+        for(int y = startY; y < maxY; y++){
+         for(int x = startX; x < maxX; x++) {
              int colorRGB = image.getRGB(x, y);
              Color color = new Color(colorRGB);
 
@@ -426,16 +426,16 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
              int squareDiameter = 10;
              //This loop will not work when the rectangles stop getting added, which is necessary to show a readable path
              //Draws rectangles to mark buildings MOSTLY FOR DEBUGGING
-             if ((color.getRed() >= 150 && color.getGreen() >= 170 && color.getBlue() >= 170) && color!=RED) {
+             if ((color.getRed() >= 150 && color.getGreen() >= 170 && color.getBlue() >= 170) && color != RED) {
                  graphics2D.setColor(RED);
-                 graphics2D.fillRect(x-squareDiameter/2, y-squareDiameter/2, squareDiameter, squareDiameter);
+                 graphics2D.fillRect(x - squareDiameter / 2, y - squareDiameter / 2, squareDiameter, squareDiameter);
                  Point myPoint = new Point(x, y);
                  unvisitedBuildings.add(myPoint);
-                 x+=squareDiameter/2;
+                 x += squareDiameter / 2;
 
-                 /*for(int checkY=y-distance; checkY<=y;checkY++){
-                     for(int checkX = x-distance; checkX<=x+distance;checkX++) {
-                         Point checkPoint = new Point(checkX,checkY);
+                 /*for(int checkY = y - distance; checkY <= y; checkY++){
+                     for(int checkX = x - distance; checkX <= x + distance; checkX++) {
+                         Point checkPoint = new Point(checkX, checkY);
                          if (unvisitedBuildings.contains(checkPoint)){
                              alreadyAdded = true;
                              break;
@@ -447,7 +447,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                      graphics2D.drawRect(x, y, 1, 1);
                      Point myPoint = new Point(x, y);
                      unvisitedBuildings.add(myPoint);
-                     x=x+distance-1;
+                     x = x + distance - 1;
                  }
                  else{
                      alreadyAdded = false;
@@ -457,14 +457,14 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         }
 
         //Plots lines between every point in set
-  /*      for(int i=0; i < unvisitedBuildings.size()-1; i++){
+  /*      for(int i = 0; i < unvisitedBuildings.size() - 1; i++){
             Graphics2D graphics2D = image.createGraphics();
             int currX = unvisitedBuildings.get(i).x;
             int currY = unvisitedBuildings.get(i).y;
             int nextX = unvisitedBuildings.get(i+1).x;
             int nextY = unvisitedBuildings.get(i+1).y;
             graphics2D.setColor(BLUE);
-            graphics2D.drawLine(currX,currY,nextX,nextY);
+            graphics2D.drawLine(currX, currY, nextX, nextY);
         }*/
     }
 
