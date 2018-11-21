@@ -1,3 +1,5 @@
+import Pubg.Api.Client.PubgApiClient;
+import Util.ConfigHandler;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -16,7 +18,9 @@ import static java.awt.Color.*;
 /*
 TODO break if message received into function calls and methods
 TODO Add documentation to everything
-TODO Fix random color generation in dropPosition overload 3
+TODO Fix color selection. Again. Sanhokt only.
+TODO PATHING 1.Color grab buildings 2.Lines between them
+TODO Pubg API - Do something useful with stats
 */
 public class DiscordBotMessageHandler extends ListenerAdapter {
 
@@ -28,6 +32,8 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     private Random rand = new Random(); //Random generator for coordinate generation
     private boolean waitingForWinConfirmation = false; //Do we check to see if the next message is confirming a win
     private boolean waitingForCoordinatesSelection = false; //Multi drop win selection is active
+    private Vector<Point> unvisitedBuildings = new Vector<>();
+    private PubgApiClient apiClient = new PubgApiClient();
 
     //Stuff for Strategy generation. pulled out so it doesn't rerun every time a message is received
     private final String[] strat = new String[] {"Fast and Loose",
@@ -63,26 +69,19 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         helpMap.put("!ping", "Check if the bot is online.");
         helpMap.put("!win", "Save winning map position to the server.");
         helpMap.put("!strategy", "Be given a random strategy for how to play out the next round.");
-        helpMap.put("!drop (e,m,s) OR !", "Be given a random position to drop in the next round.");
+        helpMap.put("!drop (e,m,s) [#] OR !", "Be given a random position to drop in the next round.");
         helpMap.put("!help", "View all possible bot commands.");
         helpMap.put("!allwin (e,m,s)", "Display a map of all starting coordinates that resulted in a win for a given map.");
         helpMap.put("!stop", "Stops all instances of God Bot.");
+        helpMap.put("!path (e,m,s)", "Draws the most efficient starting path.");
+
     }
 
     DiscordBotMessageHandler()
     {
         //Logs Bot into Discord and gets ready to receive Messages
         JDABuilder builder = new JDABuilder(AccountType.BOT);
-        File file = new File("token.txt");
-        Scanner sc = null;
-        try {
-            sc = new Scanner(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        assert sc != null;
-        String token = sc.next();
-        builder.setToken(token);
+        builder.setToken(ConfigHandler.getConfig("bot.token"));
         builder.addEventListener(this);
         try
         {
@@ -96,19 +95,26 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
 
+        //Ignores message if the author is a bot
+        if (event.getAuthor().isBot()) {
+            return;
+        }
+
         //Outputs message author and content to terminal
         System.out.println("We received a message from " +
                 event.getAuthor().getName() + ": " +
                 event.getMessage().getContentDisplay()
         );
 
-        //Ignores message if the author is a bot
-        if (event.getAuthor().isBot()) {
-            return;
-        }
 
         //Message Text, already raw and lowercase
-        String messageText = event.getMessage().getContentRaw().toLowerCase();
+        //Unless being used for stats, then retain case
+        String messageText = "";
+        if (!event.getMessage().getContentRaw().toLowerCase().contains("!stats")) {
+            messageText = event.getMessage().getContentRaw().toLowerCase();
+        } else {
+            messageText = event.getMessage().getContentRaw();
+        }
 
         //Stops all instances of God Bot
         if (messageText.equals("!stop")){
@@ -236,6 +242,45 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             }
         }
 
+        //Marks a starting path for our intrepid adventurers from the drop point
+        if(messageText.contains("!path"))
+        {
+            String cmdSplit[] = messageText.split(" ", 3);
+            BufferedImage img;
+
+            if (cmdSplit.length == 1 || messageText.equals("!")) {
+                img = getImageFromResource("PUBGMAP1.jpg");
+                currentMap = 's';
+            } else {
+                switch (cmdSplit[1]) {
+                    case "s":
+                        img = getImageFromResource("PUBGMAP1.jpg");
+                        currentMap = 's';
+                        break;
+                    case "m":
+                        img = getImageFromResource("PUBGMAP2.jpg");
+                        currentMap = 'm';
+                        break;
+                    case "e":
+                        img = getImageFromResource("PUBGMAP3.jpg");
+                        currentMap = 'e';
+                        break;
+                    default:
+                        img = getImageFromResource("PUBGMAP1.jpg");
+                        currentMap = 's';
+                        break;
+                }
+                assert img != null;
+            }
+
+                generatePathPositionImage(img);
+                event.getChannel().sendFile(writeOutputFile(img)).queue();
+                //Debugging
+                String vectorSize = "This vector holds " + String.valueOf(unvisitedBuildings.size()) + " nodes.";
+                event.getChannel().sendMessage(vectorSize).queue();
+            }
+
+
         //Outputs command list to discord
         if (messageText.equals("!help")) {
             StringBuilder messageToSend = new StringBuilder();
@@ -246,6 +291,37 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                         .append("\n");
             }
             event.getChannel().sendMessage(messageToSend.toString()).queue();
+        }
+
+        /*
+         * TODO Fix this to handle bad inputs
+         * Prints the stats for a gametype and player name (Case Sensitive)
+         */
+        if (messageText.contains("!stats")) {
+            String gameType = messageText.split(" ")[1];
+            String playerName = messageText.split(" ")[2];
+            String output = "";
+
+            if (gameType.equals("duos"))
+            {
+                try
+                {
+                    output = apiClient.getDuosStatsForPlayer(playerName).toString();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            } else if (gameType.equals("squads"))
+            {
+                try
+                {
+                    output = apiClient.getSquadsForPlayer(playerName).toString();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            event.getChannel().sendMessage(output).queue();
         }
     }
 
@@ -265,6 +341,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
     //Overloaded Version that generates an image with given coords marked NOT RANDOM
     private void generateDropPositionImage(BufferedImage image, int x, int y, int color){
+        color--;
         List<Color> colors = Arrays.asList(
                 RED,
                 BLUE.brighter().brighter(),
@@ -273,24 +350,24 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 ORANGE,
                 PINK,
                 CYAN);
-        int xColor = (color < colors.size()) ? color : color % colors.size();
-
+        int xColor = color % colors.size();
+        color++;
         Graphics2D graphics2D = image.createGraphics();
-        graphics2D.setFont(new Font("Ariel", Font.PLAIN, 50));
+        graphics2D.setFont(new Font("Ariel", Font.PLAIN, 40));
         graphics2D.setColor(colors.get(xColor));
         graphics2D.drawString(String.valueOf(color), x, y);
     }
 
-    //Overload Image creation with any symbol we want
+    //Overload Image creation with any symbol we want not RANDOM
     private void generateDropPositionImage(BufferedImage image, int x, int y, String mark){
 
         Graphics2D graphics2D = image.createGraphics();
-        graphics2D.setFont(new Font("Ariel", Font.PLAIN, 80));
+        graphics2D.setFont(new Font("Ariel", Font.PLAIN, 30));
         graphics2D.setColor(RED);
         graphics2D.drawString(mark, x, y);
     }
 
-    //Overloaded version for Multiple Drops
+    //Overloaded version for Multiple drops. Used with every drop now.
     private void generateDropPositionImage(BufferedImage image, int optionCount) {
         int imgH = image.getHeight();
         int imgW = image.getWidth();
@@ -299,14 +376,10 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             while (true) {
                 int x = rand.nextInt(imgW);
                 int y = rand.nextInt(imgH);
-                int red = rand.nextInt(256);
-                int blue = rand.nextInt(256-red);
-                int green = rand.nextInt(256-red-blue);
-                Color c = new Color(red,green,blue);
 
                 int colorRGB = image.getRGB(x, y);
                 Color color = new Color(colorRGB);
-                if ((color.getBlue() <= color.getRed() && color.getBlue() <= color.getGreen() && !color.equals(c)) || (color.getBlue() <= 50 && color.getGreen() <= 50 && color.getRed() >=20 && !color.equals(c))) {
+                if ((color.getBlue() <= color.getRed() && color.getBlue() <= color.getGreen()) || (color.getBlue() <= 50 && color.getGreen() <= 50 && color.getRed() >=20)) {
                     generateDropPositionImage(image, x, y, i);
                     //currentCoordinates.setLocation(x, y);
                     currentCoordinatesMap.put(String.valueOf(i), new Point(x, y));
@@ -315,6 +388,86 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             }
         }
     }
+
+    //Version for pathing. Picks buildings, then builds paths between
+    private void generatePathPositionImage(BufferedImage image) {
+        int imgH = image.getHeight();
+        int imgW = image.getWidth();
+
+        //Graphics settings
+        Graphics2D graphics2D = image.createGraphics();
+        graphics2D.setFont(new Font("Ariel", Font.PLAIN, 10));
+        graphics2D.setColor(RED);
+        //Making sure our building vector is empty
+        unvisitedBuildings.clear();
+
+        //Setting min and max coords for plotting around a drop site
+        Point currentCoords = currentCoordinatesMap.get("1");
+        int distance = 200; //Distance in pixels of the area to search in
+        int startX = currentCoords.x - distance / 2;
+        int startY = currentCoords.y - distance / 2;
+        if (startX <0) startX = 0;
+        if(startY < 0) startY = 0;
+        int maxX = currentCoords.x + distance / 2;
+        int maxY = currentCoords.y + distance / 2;
+        if (maxX > imgW) maxX = imgW;
+        if(maxY > imgH) maxY = imgH;
+
+        //Marks every building on map and adds to set
+//Uncommenting this makes path run for the entire map
+//        for(int y=0; y < imgH; y++){
+//            for(int x = 0; x < imgW; x++) {
+        for(int y = startY; y < maxY; y++){
+         for(int x = startX; x < maxX; x++) {
+             int colorRGB = image.getRGB(x, y);
+             Color color = new Color(colorRGB);
+
+             //Diameter of the drawn square, shrinking this for more accurate results, but a bigger vector
+             int squareDiameter = 10;
+             //This loop will not work when the rectangles stop getting added, which is necessary to show a readable path
+             //Draws rectangles to mark buildings MOSTLY FOR DEBUGGING
+             if ((color.getRed() >= 150 && color.getGreen() >= 170 && color.getBlue() >= 170) && color != RED) {
+                 graphics2D.setColor(RED);
+                 graphics2D.fillRect(x - squareDiameter / 2, y - squareDiameter / 2, squareDiameter, squareDiameter);
+                 Point myPoint = new Point(x, y);
+                 unvisitedBuildings.add(myPoint);
+                 x += squareDiameter / 2;
+
+                 /*for(int checkY = y - distance; checkY <= y; checkY++){
+                     for(int checkX = x - distance; checkX <= x + distance; checkX++) {
+                         Point checkPoint = new Point(checkX, checkY);
+                         if (unvisitedBuildings.contains(checkPoint)){
+                             alreadyAdded = true;
+                             break;
+                         }
+
+                     }
+                     }
+                 if (!alreadyAdded) {
+                     graphics2D.drawRect(x, y, 1, 1);
+                     Point myPoint = new Point(x, y);
+                     unvisitedBuildings.add(myPoint);
+                     x = x + distance - 1;
+                 }
+                 else{
+                     alreadyAdded = false;
+                 }*/
+             }
+         }
+        }
+
+        //Plots lines between every point in set
+  /*      for(int i = 0; i < unvisitedBuildings.size() - 1; i++){
+            Graphics2D graphics2D = image.createGraphics();
+            int currX = unvisitedBuildings.get(i).x;
+            int currY = unvisitedBuildings.get(i).y;
+            int nextX = unvisitedBuildings.get(i+1).x;
+            int nextY = unvisitedBuildings.get(i+1).y;
+            graphics2D.setColor(BLUE);
+            graphics2D.drawLine(currX, currY, nextX, nextY);
+        }*/
+    }
+
     //Outputs given image to tempdir
     private File writeOutputFile(BufferedImage imageToOutput) {
         File outputFile = new File(tempDir + "PUBGMAPEDIT.jpg");
