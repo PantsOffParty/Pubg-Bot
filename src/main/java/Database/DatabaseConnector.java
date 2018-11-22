@@ -21,6 +21,7 @@ public class DatabaseConnector {
         dataSource.setPassword(ConfigHandler.getDatabaseConfig("password"));
         dataSource.setServerName(ConfigHandler.getDatabaseConfig("server"));
         dataSource.setDatabaseName(ConfigHandler.getDatabaseConfig("database"));
+        dataSource.setUseSSL(false);
         return dataSource.getConnection();
     }
 
