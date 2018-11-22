@@ -188,18 +188,18 @@ public class GameModeStats {
     public String toString() {
         StringBuilder result = new StringBuilder();
         String newLine = System.getProperty("line.separator");
-        result.append( "Stats {" );
+        result.append("Stats {");
         result.append(newLine);
         Field[] fields = this.getClass().getDeclaredFields();
 
-        for ( Field field : fields  ) {
+        for (Field field : fields) {
             result.append("  ");
             try {
-                result.append( field.getName() );
+                result.append(field.getName());
                 result.append(": ");
                 //requires access to private field:
-                result.append( field.get(this) );
-            } catch ( IllegalAccessException ex ) {
+                result.append(field.get(this));
+            } catch (IllegalAccessException ex) {
                 ex.printStackTrace();
             }
             result.append(newLine);

@@ -14,6 +14,6 @@ CREATE TABLE `win` (
   `win_date` datetime DEFAULT CURRENT_TIMESTAMP,
   `x_coord` float NOT NULL,
   `y_coord` float NOT NULL,
-  `win_image` varchar(100) DEFAULT NULL,
+  `map` varchar(45) NOT NULL,
   PRIMARY KEY (`id`)
 );

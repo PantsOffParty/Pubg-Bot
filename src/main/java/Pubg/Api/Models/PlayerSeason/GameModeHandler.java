@@ -10,13 +10,11 @@ public class GameModeHandler {
     @SerializedName("squad-fpp")
     private GameModeStats squads;
 
-    public GameModeStats getDuos()
-    {
+    public GameModeStats getDuos() {
         return duos;
     }
 
-    public GameModeStats getSquads()
-    {
+    public GameModeStats getSquads() {
         return squads;
     }
 }
