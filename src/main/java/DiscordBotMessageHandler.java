@@ -81,7 +81,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     {
         //Logs Bot into Discord and gets ready to receive Messages
         JDABuilder builder = new JDABuilder(AccountType.BOT);
-        builder.setToken(ConfigHandler.getConfig("bot.token"));
+        builder.setToken(ConfigHandler.getBotConfig("bot.token"));
         builder.addEventListener(this);
         try
         {

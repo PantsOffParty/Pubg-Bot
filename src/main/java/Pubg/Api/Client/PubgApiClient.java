@@ -20,7 +20,7 @@ import java.util.List;
 
 public class PubgApiClient {
     private HttpURLConnection connection;
-    private String apiKey = ConfigHandler.getConfig("api.key");
+    private String apiKey = ConfigHandler.getBotConfig("api.key");
     private String API_BASE_URL = "https://api.pubg.com/shards/steam/";
     private JsonParser parser = new JsonParser();
 
