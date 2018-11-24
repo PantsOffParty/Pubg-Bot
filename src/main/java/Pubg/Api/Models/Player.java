@@ -7,8 +7,7 @@ package Pubg.Api.Models;
 public class Player {
     private String id;
 
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 }
