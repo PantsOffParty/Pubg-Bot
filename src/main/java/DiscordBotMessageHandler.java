@@ -1,3 +1,4 @@
+import Database.DatabaseConnector;
 import Pubg.Api.Client.PubgApiClient;
 import Util.ConfigHandler;
 import net.dv8tion.jda.core.AccountType;
@@ -34,9 +35,10 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     private boolean waitingForCoordinatesSelection = false; //Multi drop win selection is active
     private Vector<Point> unvisitedBuildings = new Vector<>();
     private PubgApiClient apiClient = new PubgApiClient();
+    private DatabaseConnector db = new DatabaseConnector();
 
     //Stuff for Strategy generation. pulled out so it doesn't rerun every time a message is received
-    private final String[] strat = new String[] {"Fast and Loose",
+    private final String[] strat = new String[]{"Fast and Loose",
             "Hyper-aggressive",
             "Mounted Combat",
             "Play It Safe",
@@ -63,8 +65,8 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
     private final int STRATNUM = strat.length;
     private final static Map<String, String> helpMap; //Map to store command list and action
-    static
-    {
+
+    static {
         helpMap = new HashMap<>();
         helpMap.put("!ping", "Check if the bot is online.");
         helpMap.put("!win", "Save winning map position to the server.");
@@ -77,14 +79,12 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
     }
 
-    DiscordBotMessageHandler()
-    {
+    DiscordBotMessageHandler() {
         //Logs Bot into Discord and gets ready to receive Messages
         JDABuilder builder = new JDABuilder(AccountType.BOT);
-        builder.setToken(ConfigHandler.getConfig("bot.token"));
+        builder.setToken(ConfigHandler.getBotConfig("bot.token"));
         builder.addEventListener(this);
-        try
-        {
+        try {
             builder.buildAsync();
         } catch (LoginException e) {
             System.err.println("Unable to login.");
@@ -117,17 +117,15 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         }
 
         //Stops all instances of God Bot
-        if (messageText.equals("!stop")){
+        if (messageText.equals("!stop")) {
             event.getChannel().sendMessage("Shutting down...").queue();
             System.exit(0);
         }
 
         //For confirming a !win command.
-        if (waitingForWinConfirmation)
-        {
+        if (waitingForWinConfirmation) {
             waitingForWinConfirmation = false;
-            if (messageText.equals("y"))
-            {
+            if (messageText.equals("y")) {
                 exportWinningDropCoordinates();
                 event.getChannel().sendMessage("Winning coordinates have been saved!").queue();
                 return;
@@ -138,22 +136,18 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         /*
          * Select which coordinates to use when winning a multi drop.
          */
-        if (waitingForCoordinatesSelection)
-        {
-            if (currentCoordinatesMap.keySet().contains(messageText))
-            {
+        if (waitingForCoordinatesSelection) {
+            if (currentCoordinatesMap.keySet().contains(messageText)) {
                 currentCoordinates = currentCoordinatesMap.get(messageText);
                 exportWinningDropCoordinates();
                 waitingForCoordinatesSelection = false;
                 event.getChannel().sendMessage("Coordinates saved.").queue();
                 return;
-            }
-            else if (messageText.equals("!exit")) {
+            } else if (messageText.equals("!exit")) {
                 event.getChannel().sendMessage("No coordinate selection made.").queue();
                 waitingForCoordinatesSelection = false;
                 return;
-            }
-            else {
+            } else {
                 event.getChannel().
                         sendMessage(messageText + " is not a valid selection. Try again or type !exit to cancel coordinate capture.").queue();
                 return;
@@ -168,14 +162,13 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         //Stores winning coordinates in file after confirmation
         if (messageText.equals("!win")) {
             if (currentCoordinatesMap.size() == 1) {
-                currentCoordinates = currentCoordinatesMap.get("0");
+                currentCoordinates = currentCoordinatesMap.get("1");
                 event.getChannel().sendMessage(" (Y,N) - Confirm you want to save a win at coordinates (" +
-                        currentCoordinates.getX() + ", " + currentCoordinates.getY() +  ")").queue();
+                        currentCoordinates.getX() + ", " + currentCoordinates.getY() + ")").queue();
                 event.getChannel().sendFile(getLastOutputFile()).queue();
                 waitingForWinConfirmation = true;
             } else {
                 event.getChannel().sendMessage("Which drop position would you like to save? " + currentCoordinatesMap.keySet()).queue();
-                //event.getChannel().sendFile(getLastOutputFile()).queue();
                 waitingForCoordinatesSelection = true;
             }
         }
@@ -191,7 +184,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         if (messageText.contains("!drop") || messageText.equals("!")) {
             String cmdSplit[] = messageText.split(" ", 3);
             BufferedImage img;
-            if (cmdSplit.length ==1 || messageText.equals("!")) {
+            if (cmdSplit.length == 1 || messageText.equals("!")) {
                 img = getImageFromResource("PUBGMAP1.jpg");
                 currentMap = 's';
             } else {
@@ -219,8 +212,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             if (cmdSplit.length == 3) {
                 int dropCount = Integer.parseInt(cmdSplit[2]);
                 generateDropPositionImage(img, dropCount);
-            }
-            else {
+            } else {
                 int dropCount = 1;
                 generateDropPositionImage(img, dropCount);
             }
@@ -228,11 +220,9 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         }
 
         //Regurgitate all winning coordinates for a given map
-        if (messageText.contains("!allwin"))
-        {
+        if (messageText.contains("!allwin")) {
             String mapKey = "s";
-            if (messageText.split(" ").length != 1)
-            {
+            if (messageText.split(" ").length != 1) {
                 mapKey = messageText.split(" ")[1];
             }
             try {
@@ -243,8 +233,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         }
 
         //Marks a starting path for our intrepid adventurers from the drop point
-        if(messageText.contains("!path"))
-        {
+        if (messageText.contains("!path")) {
             String cmdSplit[] = messageText.split(" ", 3);
             BufferedImage img;
 
@@ -273,12 +262,13 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 assert img != null;
             }
 
-                generatePathPositionImage(img);
-                event.getChannel().sendFile(writeOutputFile(img)).queue();
-                //Debugging
-                String vectorSize = "This vector holds " + String.valueOf(unvisitedBuildings.size()) + " nodes.";
-                event.getChannel().sendMessage(vectorSize).queue();
-            }
+            assert img != null;
+            generatePathPositionImage(img);
+            event.getChannel().sendFile(writeOutputFile(img)).queue();
+            //Debugging
+            String vectorSize = "This vector holds " + String.valueOf(unvisitedBuildings.size()) + " nodes.";
+            event.getChannel().sendMessage(vectorSize).queue();
+        }
 
 
         //Outputs command list to discord
@@ -294,45 +284,40 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         }
 
         /*
-         * TODO Fix this to handle bad inputs
          * Prints the stats for a gametype and player name (Case Sensitive)
          */
         if (messageText.contains("!stats")) {
-            String gameType = messageText.split(" ")[1];
-            String playerName = messageText.split(" ")[2];
-            String output = "";
-
-            if (gameType.equals("duos"))
-            {
-                try
-                {
-                    output = apiClient.getDuosStatsForPlayer(playerName).toString();
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            } else if (gameType.equals("squads"))
-            {
-                try
-                {
-                    output = apiClient.getSquadsForPlayer(playerName).toString();
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            event.getChannel().sendMessage(output).queue();
+            handleStatsCommand(messageText, event);
         }
+    }
+
+    //TODO Fix this to handle bad inputs
+    private void handleStatsCommand(String messageText, MessageReceivedEvent event) {
+        String gameType = messageText.split(" ")[1];
+        String playerName = messageText.split(" ")[2];
+        String output = "";
+
+        if (gameType.equals("duos")) {
+            try {
+                output = apiClient.getDuosStatsForPlayer(playerName).toString();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (gameType.equals("squads")) {
+            try {
+                output = apiClient.getSquadsForPlayer(playerName).toString();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        event.getChannel().sendMessage(output).queue();
     }
 
     //Reads in an image into a BufferedImage object
     private BufferedImage getImageFromResource(String image) {
-        try
-        {
+        try {
             return ImageIO.read(this.getClass().getResourceAsStream(image));
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
@@ -340,7 +325,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
 
     //Overloaded Version that generates an image with given coords marked NOT RANDOM
-    private void generateDropPositionImage(BufferedImage image, int x, int y, int color){
+    private void generateDropPositionImage(BufferedImage image, int x, int y, int color) {
         color--;
         List<Color> colors = Arrays.asList(
                 RED,
@@ -359,10 +344,10 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     }
 
     //Overload Image creation with any symbol we want not RANDOM
-    private void generateDropPositionImage(BufferedImage image, int x, int y, String mark){
+    private void generateDropPositionImage(BufferedImage image, int x, int y, String mark) {
 
         Graphics2D graphics2D = image.createGraphics();
-        graphics2D.setFont(new Font("Ariel", Font.PLAIN, 30));
+        graphics2D.setFont(new Font("Ariel", Font.PLAIN, 90));
         graphics2D.setColor(RED);
         graphics2D.drawString(mark, x, y);
     }
@@ -379,9 +364,8 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
                 int colorRGB = image.getRGB(x, y);
                 Color color = new Color(colorRGB);
-                if ((color.getBlue() <= color.getRed() && color.getBlue() <= color.getGreen()) || (color.getBlue() <= 50 && color.getGreen() <= 50 && color.getRed() >=20)) {
+                if ((color.getBlue() <= color.getRed() && color.getBlue() <= color.getGreen()) || (color.getBlue() <= 50 && color.getGreen() <= 50 && color.getRed() >= 20)) {
                     generateDropPositionImage(image, x, y, i);
-                    //currentCoordinates.setLocation(x, y);
                     currentCoordinatesMap.put(String.valueOf(i), new Point(x, y));
                     break;
                 }
@@ -406,32 +390,32 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         int distance = 200; //Distance in pixels of the area to search in
         int startX = currentCoords.x - distance / 2;
         int startY = currentCoords.y - distance / 2;
-        if (startX <0) startX = 0;
-        if(startY < 0) startY = 0;
+        if (startX < 0) startX = 0;
+        if (startY < 0) startY = 0;
         int maxX = currentCoords.x + distance / 2;
         int maxY = currentCoords.y + distance / 2;
         if (maxX > imgW) maxX = imgW;
-        if(maxY > imgH) maxY = imgH;
+        if (maxY > imgH) maxY = imgH;
 
         //Marks every building on map and adds to set
 //Uncommenting this makes path run for the entire map
 //        for(int y=0; y < imgH; y++){
 //            for(int x = 0; x < imgW; x++) {
-        for(int y = startY; y < maxY; y++){
-         for(int x = startX; x < maxX; x++) {
-             int colorRGB = image.getRGB(x, y);
-             Color color = new Color(colorRGB);
+        for (int y = startY; y < maxY; y++) {
+            for (int x = startX; x < maxX; x++) {
+                int colorRGB = image.getRGB(x, y);
+                Color color = new Color(colorRGB);
 
-             //Diameter of the drawn square, shrinking this for more accurate results, but a bigger vector
-             int squareDiameter = 10;
-             //This loop will not work when the rectangles stop getting added, which is necessary to show a readable path
-             //Draws rectangles to mark buildings MOSTLY FOR DEBUGGING
-             if ((color.getRed() >= 150 && color.getGreen() >= 170 && color.getBlue() >= 170) && color != RED) {
-                 graphics2D.setColor(RED);
-                 graphics2D.fillRect(x - squareDiameter / 2, y - squareDiameter / 2, squareDiameter, squareDiameter);
-                 Point myPoint = new Point(x, y);
-                 unvisitedBuildings.add(myPoint);
-                 x += squareDiameter / 2;
+                //Diameter of the drawn square, shrinking this for more accurate results, but a bigger vector
+                int squareDiameter = 10;
+                //This loop will not work when the rectangles stop getting added, which is necessary to show a readable path
+                //Draws rectangles to mark buildings MOSTLY FOR DEBUGGING
+                if ((color.getRed() >= 150 && color.getGreen() >= 170 && color.getBlue() >= 170) && color != RED) {
+                    graphics2D.setColor(RED);
+                    graphics2D.fillRect(x - squareDiameter / 2, y - squareDiameter / 2, squareDiameter, squareDiameter);
+                    Point myPoint = new Point(x, y);
+                    unvisitedBuildings.add(myPoint);
+                    x += squareDiameter / 2;
 
                  /*for(int checkY = y - distance; checkY <= y; checkY++){
                      for(int checkX = x - distance; checkX <= x + distance; checkX++) {
@@ -452,8 +436,8 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                  else{
                      alreadyAdded = false;
                  }*/
-             }
-         }
+                }
+            }
         }
 
         //Plots lines between every point in set
@@ -471,12 +455,9 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     //Outputs given image to tempdir
     private File writeOutputFile(BufferedImage imageToOutput) {
         File outputFile = new File(tempDir + "PUBGMAPEDIT.jpg");
-        try
-        {
+        try {
             ImageIO.write(imageToOutput, "jpg", outputFile);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return outputFile;
@@ -488,68 +469,35 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     }
 
     //Outputs current coords to the given map file
-    private void exportWinningDropCoordinates()
-    {
-        String mapFileName = "";
-        switch (currentMap) {
-            case 's':
-                mapFileName = "WinCoordinatesSanhok";
-                break;
-            case 'e':
-                mapFileName = "WinCoordinatesErangel";
-                break;
-            case 'm':
-                mapFileName = "WinCoordinatesMiramar";
-                break;
-        }
-        try (BufferedWriter output = new BufferedWriter(new FileWriter(System.getenv("USERPROFILE") +
-                "\\desktop\\" + mapFileName + ".txt", true)))
-        {
-            output.write(currentCoordinates.getX() + "," + currentCoordinates.getY());
-            output.newLine();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+    private void exportWinningDropCoordinates() {
+        db.insertWin((float)currentCoordinates.getX(), (float)currentCoordinates.getY(), String.valueOf(currentMap));
     }
 
-    //Marks the given map with all coords from file and returns image
+    //Marks the given map with all coords from database and returns image
     private BufferedImage getAllWinCoordinatesImage(String mapKey) throws IOException {
-        String mapFileName;
         String mapImageName;
         BufferedImage image;
 
-        //Sets map and gets file
+        //gets file
         switch (mapKey) {
             case "e":
-                mapFileName = "WinCoordinatesErangel";
                 mapImageName = "PUBGMAP3.jpg";
                 break;
             case "m":
-                mapFileName = "WinCoordinatesMiramar";
                 mapImageName = "PUBGMAP2.jpg";
                 break;
             default:
-                mapFileName = "WinCoordinatesSanhok";
                 mapImageName = "PUBGMAP1.jpg";
                 break;
         }
         image = getImageFromResource(mapImageName);
-        BufferedReader br = new BufferedReader(new FileReader(System.getenv("USERPROFILE") +
-                "\\desktop\\" + mapFileName + ".txt"));
 
-        //Read in coords from file and add to image
-        for (String line; (line = br.readLine()) != null; )
+        List<Point> winPoints = db.getAllWinCoordinatesByMap(String.valueOf(currentMap));
+        for(Point point : winPoints)
         {
-            List<String> x_y_coords = Arrays.asList(line.split(","));
-            int x = (int) Double.parseDouble(x_y_coords.get(0));
-            int y = (int) Double.parseDouble(x_y_coords.get(1));
-
             assert image != null;
-            generateDropPositionImage(image,x,y, "x");
+            generateDropPositionImage(image, (int)point.getX(), (int)point.getY(), "x");
         }
-        br.close();
         return image;
     }
 }

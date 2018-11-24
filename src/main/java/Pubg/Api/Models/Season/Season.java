@@ -12,13 +12,11 @@ public class Season {
     @SerializedName("attributes")
     private SeasonAttributes seasonAttributes;
 
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
-    public SeasonAttributes getSeasonAttributes()
-    {
+    public SeasonAttributes getSeasonAttributes() {
         return seasonAttributes;
     }
 

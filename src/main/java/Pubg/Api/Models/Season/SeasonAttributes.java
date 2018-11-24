@@ -9,8 +9,7 @@ public class SeasonAttributes {
     private boolean isCurrentSeason;
     private boolean isOffSeason;
 
-    public boolean getIsCurrentSeason()
-    {
+    public boolean getIsCurrentSeason() {
         return isCurrentSeason;
     }
 

@@ -7,8 +7,7 @@ public class PlayerSeason {
     @SerializedName("attributes")
     private PlayerSeasonAttributes playerSeasonAttributes;
 
-    public PlayerSeasonAttributes getPlayerSeasonAttributes()
-    {
+    public PlayerSeasonAttributes getPlayerSeasonAttributes() {
         return playerSeasonAttributes;
     }
 

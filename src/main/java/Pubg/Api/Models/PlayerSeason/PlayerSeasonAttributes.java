@@ -7,8 +7,7 @@ public class PlayerSeasonAttributes {
     @SerializedName("gameModeStats")
     private GameModeHandler gameModeHandler;
 
-    public GameModeHandler getGameModeHandler()
-    {
+    public GameModeHandler getGameModeHandler() {
         return gameModeHandler;
     }
 }
