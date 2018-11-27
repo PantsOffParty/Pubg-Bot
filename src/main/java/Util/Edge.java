@@ -2,8 +2,8 @@ package Util;
 
 import java.awt.*;
 
-public class Edges {
-    public Edges(Point point1, Point point2){
+public class Edge {
+    public Edge(Point point1, Point point2){
         this.pointA = point1;
         this.pointB = point2;
         distanceCalc(pointA,pointB);

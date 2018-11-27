@@ -1,7 +1,7 @@
 import Database.DatabaseConnector;
 import Pubg.Api.Client.PubgApiClient;
 import Util.ConfigHandler;
-import Util.Edges;
+import Util.Edge;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -12,7 +12,6 @@ import javax.security.auth.login.LoginException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.sql.Struct;
 import java.util.*;
 import java.util.List;
 
@@ -38,7 +37,9 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     private Vector<Point> unvisitedBuildings = new Vector<>();
     private PubgApiClient apiClient = new PubgApiClient();
     private DatabaseConnector db = new DatabaseConnector();
-    private Vector<Edges> myEdges = new Vector<>();
+    private Vector<Edge> myEdges = new Vector<>();
+    private Vector<Point> visitedBuildings = new Vector<>();
+
     //Stuff for Strategy generation. pulled out so it doesn't rerun every time a message is received
     private final String[] strat = new String[]{"Fast and Loose",
             "Hyper-aggressive",
@@ -270,7 +271,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             //Debugging
             String vectorSize = "This vector holds " + String.valueOf(unvisitedBuildings.size()) + " nodes.";
             event.getChannel().sendMessage(vectorSize).queue();
-            String edgesSize = "The edge vector holds: " + String.valueOf(myEdges.size()) + " edges.";
+            String edgesSize = "The edge vector holds " + String.valueOf(myEdges.size()) + " edges.";
             event.getChannel().sendMessage(edgesSize).queue();
         }
 
@@ -391,7 +392,8 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
         //Setting min and max coords for plotting around a drop site
         Point currentCoords = currentCoordinatesMap.get("1");
-        int distance = 200; //Distance in pixels of the area to search in
+        int distance = 400; //Distance in pixels of the area to search in
+        int squareDiameter = 25; //Diameter of the drawn square, shrinking this for more accurate results, but a bigger vector
         int startX = currentCoords.x - distance / 2;
         int startY = currentCoords.y - distance / 2;
         if (startX < 0) startX = 0;
@@ -403,48 +405,25 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
         //Marks every building on map and adds to set
 //Uncommenting this makes path run for the entire map
-//        for(int y=0; y < imgH; y++){
-//            for(int x = 0; x < imgW; x++) {
         for (int y = startY; y < maxY; y++) {
             for (int x = startX; x < maxX; x++) {
                 int colorRGB = image.getRGB(x, y);
                 Color color = new Color(colorRGB);
 
-                //Diameter of the drawn square, shrinking this for more accurate results, but a bigger vector
-                int squareDiameter = 10;
+
                 //This loop will not work when the rectangles stop getting added, which is necessary to show a readable path
                 //Draws rectangles to mark buildings MOSTLY FOR DEBUGGING
                 if ((color.getRed() >= 150 && color.getGreen() >= 170 && color.getBlue() >= 170) && color != RED) {
                     graphics2D.setColor(RED);
-                    graphics2D.fillRect(x - squareDiameter / 2, y - squareDiameter / 2, squareDiameter, squareDiameter);
+//                    graphics2D.fillRect(x - squareDiameter / 2, y - squareDiameter / 2, squareDiameter, squareDiameter);
                     Point myPoint = new Point(x, y);
                     unvisitedBuildings.add(myPoint);
                     x += squareDiameter / 2;
-
-                 /*for(int checkY = y - distance; checkY <= y; checkY++){
-                     for(int checkX = x - distance; checkX <= x + distance; checkX++) {
-                         Point checkPoint = new Point(checkX, checkY);
-                         if (unvisitedBuildings.contains(checkPoint)){
-                             alreadyAdded = true;
-                             break;
-                         }
-
-                     }
-                     }
-                 if (!alreadyAdded) {
-                     graphics2D.drawRect(x, y, 1, 1);
-                     Point myPoint = new Point(x, y);
-                     unvisitedBuildings.add(myPoint);
-                     x = x + distance - 1;
-                 }
-                 else{
-                     alreadyAdded = false;
-                 }*/
                 }
             }
         }
 
-        //Plots lines between every point in set
+        //Plots lines between every point in set || Calculates edges between all nodes in unvisitedBuildings
         for(int startPos = 0; startPos < unvisitedBuildings.size() - 1; startPos++) {
 
             int currX = unvisitedBuildings.get(startPos).x;
@@ -453,10 +432,54 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             for (int destPos = 1; destPos < unvisitedBuildings.size(); destPos++) {
                 int nextX = unvisitedBuildings.get(destPos).x;
                 int nextY = unvisitedBuildings.get(destPos).y;
-                graphics2D.setColor(BLUE);
-                graphics2D.drawLine(currX, currY, nextX, nextY);
-                myEdges.add(new Edges(unvisitedBuildings.get(startPos),unvisitedBuildings.get(destPos)));
+                graphics2D.setColor(RED);
+                //graphics2D.drawLine(currX, currY, nextX, nextY);
+                myEdges.add(new Edge(unvisitedBuildings.get(startPos),unvisitedBuildings.get(destPos)));
             }
+        }
+//        int startPos = 0;
+//        int destPos = 1;
+//        while( destPos < myEdges.size()){
+//            int beginX = myEdges.get(startPos).pointA.x;
+//            int beginY = myEdges.get(startPos).pointA.y;
+//
+//            if (myEdges.get(destPos).pointA.x == beginX && myEdges.get(destPos).pointA.y == beginY){
+//                graphics2D.drawLine(beginX,beginY,myEdges.get(destPos).pointB.x,myEdges.get(destPos).pointB.y);
+//            }
+//            else if (myEdges.get(destPos).pointB.x == beginX && myEdges.get(destPos).pointB.y == beginY)
+//            {
+//                graphics2D.drawLine(myEdges.get(destPos).pointA.x,myEdges.get(destPos).pointA.y,beginX,beginY);
+//            }
+//            destPos++;
+//        }
+
+        //Adding drop position to edges to get distances necessary to find closest point
+
+        int i;
+
+        graphics2D.setColor(BLUE);
+        graphics2D.setFont(new Font("Ariel", Font.PLAIN, 20));
+        graphics2D.drawString("x",currentCoords.x,currentCoords.y);
+        Color red = RED;
+        graphics2D.setColor(RED);
+        while(unvisitedBuildings.size() != 0) {
+            Point closestPoint = null;
+            double closestDistance=999999999;
+            int closestIndex = -1;
+            myEdges.clear();
+            for (i = 0; i < unvisitedBuildings.size(); i++) {
+                myEdges.add(new Edge(currentCoords, unvisitedBuildings.get(i)));
+                if (myEdges.lastElement().distance <= closestDistance) {
+                    closestDistance = myEdges.lastElement().distance;
+                    closestPoint = unvisitedBuildings.get(i);
+                    closestIndex = i;
+                }
+            }
+            unvisitedBuildings.remove(closestIndex);
+            graphics2D.drawLine(currentCoords.x, currentCoords.y, closestPoint.x, closestPoint.y);
+            graphics2D.setColor(red);
+            visitedBuildings.add(closestPoint);
+            currentCoords = closestPoint;
         }
     }
 
