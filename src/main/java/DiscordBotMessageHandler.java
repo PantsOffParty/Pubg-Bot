@@ -1,6 +1,7 @@
 import Database.DatabaseConnector;
 import Pubg.Api.Client.PubgApiClient;
 import Util.ConfigHandler;
+import Util.Edges;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -11,6 +12,7 @@ import javax.security.auth.login.LoginException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.sql.Struct;
 import java.util.*;
 import java.util.List;
 
@@ -36,7 +38,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     private Vector<Point> unvisitedBuildings = new Vector<>();
     private PubgApiClient apiClient = new PubgApiClient();
     private DatabaseConnector db = new DatabaseConnector();
-
+    private Vector<Edges> myEdges = new Vector<>();
     //Stuff for Strategy generation. pulled out so it doesn't rerun every time a message is received
     private final String[] strat = new String[]{"Fast and Loose",
             "Hyper-aggressive",
@@ -268,6 +270,8 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             //Debugging
             String vectorSize = "This vector holds " + String.valueOf(unvisitedBuildings.size()) + " nodes.";
             event.getChannel().sendMessage(vectorSize).queue();
+            String edgesSize = "The edge vector holds: " + String.valueOf(myEdges.size()) + " edges.";
+            event.getChannel().sendMessage(edgesSize).queue();
         }
 
 
@@ -441,15 +445,19 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         }
 
         //Plots lines between every point in set
-  /*      for(int i = 0; i < unvisitedBuildings.size() - 1; i++){
-            Graphics2D graphics2D = image.createGraphics();
-            int currX = unvisitedBuildings.get(i).x;
-            int currY = unvisitedBuildings.get(i).y;
-            int nextX = unvisitedBuildings.get(i+1).x;
-            int nextY = unvisitedBuildings.get(i+1).y;
-            graphics2D.setColor(BLUE);
-            graphics2D.drawLine(currX, currY, nextX, nextY);
-        }*/
+        for(int startPos = 0; startPos < unvisitedBuildings.size() - 1; startPos++) {
+
+            int currX = unvisitedBuildings.get(startPos).x;
+            int currY = unvisitedBuildings.get(startPos).y;
+
+            for (int destPos = 1; destPos < unvisitedBuildings.size(); destPos++) {
+                int nextX = unvisitedBuildings.get(destPos).x;
+                int nextY = unvisitedBuildings.get(destPos).y;
+                graphics2D.setColor(BLUE);
+                graphics2D.drawLine(currX, currY, nextX, nextY);
+                myEdges.add(new Edges(unvisitedBuildings.get(startPos),unvisitedBuildings.get(destPos)));
+            }
+        }
     }
 
     //Outputs given image to tempdir
