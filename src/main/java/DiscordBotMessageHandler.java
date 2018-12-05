@@ -41,7 +41,8 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     private Vector<Point> visitedBuildings = new Vector<>();
 
     //Stuff for Strategy generation. pulled out so it doesn't rerun every time a message is received
-    private final String[] strat = new String[]{"Fast and Loose",
+    private final String[] strat = new String[]{
+            "Fast and Loose",
             "Hyper-aggressive",
             "Mounted Combat",
             "Play It Safe",
@@ -64,7 +65,8 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             "Make 'em Bleed",
             "Use your Fuckin' Brains, Retards",
             "Mountain Goat",
-            "One Gun Salute"};
+            "One Gun Salute"
+    };
 
     private final int STRATNUM = strat.length;
     private final static Map<String, String> helpMap; //Map to store command list and action
@@ -82,8 +84,8 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
     }
 
+    //Logs Bot into Discord and gets ready to receive Messages
     DiscordBotMessageHandler() {
-        //Logs Bot into Discord and gets ready to receive Messages
         JDABuilder builder = new JDABuilder(AccountType.BOT);
         builder.setToken(ConfigHandler.getBotConfig("bot.token"));
         builder.addEventListener(this);
@@ -214,10 +216,10 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
             if (cmdSplit.length == 3) {
                 int dropCount = Integer.parseInt(cmdSplit[2]);
-                generateDropPositionImage(img, dropCount);
+                generateDropPosition(img, dropCount);
             } else {
                 int dropCount = 1;
-                generateDropPositionImage(img, dropCount);
+                generateDropPosition(img, dropCount);
             }
             event.getChannel().sendFile(writeOutputFile(img)).queue();
         }
@@ -318,19 +320,30 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         event.getChannel().sendMessage(output).queue();
     }
 
-    //Reads in an image into a BufferedImage object
-    private BufferedImage getImageFromResource(String image) {
-        try {
-            return ImageIO.read(this.getClass().getResourceAsStream(image));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+    //Start of DropPosition generation. Generates random position and calls image creater
+    private void generateDropPosition(BufferedImage image, int optionCount) {
+        int imgH = image.getHeight();
+        int imgW = image.getWidth();
+
+        for (int i = 1; i < optionCount + 1; i++) {
+            while (true) {
+                int x = rand.nextInt(imgW);
+                int y = rand.nextInt(imgH);
+
+                int colorRGB = image.getRGB(x, y);
+                Color color = new Color(colorRGB);
+                //Picking non water position and call generateImage
+                if ((color.getBlue() <= color.getRed() && color.getBlue() <= color.getGreen()) || (color.getBlue() <= 50 && color.getGreen() <= 50 && color.getRed() >= 20)) {
+                    generateDropPositionImageMULTI(image, x, y, i);
+                    currentCoordinatesMap.put(String.valueOf(i), new Point(x, y));
+                    break;
+                }
+            }
         }
     }
 
-
-    //Overloaded Version that generates an image with given coords marked NOT RANDOM
-    private void generateDropPositionImage(BufferedImage image, int x, int y, int color) {
+    //Multi-Drop Version that generates an image with given coords with a different color incremented number
+    private void generateDropPositionImageMULTI(BufferedImage image, int x, int y, int color) {
         color--;
         List<Color> colors = Arrays.asList(
                 RED,
@@ -348,34 +361,13 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         graphics2D.drawString(String.valueOf(color), x, y);
     }
 
-    //Overload Image creation with any symbol we want not RANDOM
-    private void generateDropPositionImage(BufferedImage image, int x, int y, String mark) {
+    //Marks a given point on image with given Mark
+    private void markMapPosition(BufferedImage image, int x, int y, String mark) {
 
         Graphics2D graphics2D = image.createGraphics();
         graphics2D.setFont(new Font("Ariel", Font.PLAIN, 90));
         graphics2D.setColor(RED);
         graphics2D.drawString(mark, x, y);
-    }
-
-    //Overloaded version for Multiple drops. Used with every drop now.
-    private void generateDropPositionImage(BufferedImage image, int optionCount) {
-        int imgH = image.getHeight();
-        int imgW = image.getWidth();
-
-        for (int i = 1; i < optionCount + 1; i++) {
-            while (true) {
-                int x = rand.nextInt(imgW);
-                int y = rand.nextInt(imgH);
-
-                int colorRGB = image.getRGB(x, y);
-                Color color = new Color(colorRGB);
-                if ((color.getBlue() <= color.getRed() && color.getBlue() <= color.getGreen()) || (color.getBlue() <= 50 && color.getGreen() <= 50 && color.getRed() >= 20)) {
-                    generateDropPositionImage(image, x, y, i);
-                    currentCoordinatesMap.put(String.valueOf(i), new Point(x, y));
-                    break;
-                }
-            }
-        }
     }
 
     //Version for pathing. Picks buildings, then builds paths between
@@ -483,6 +475,16 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         }
     }
 
+    //Reads in an image into a BufferedImage object
+    private BufferedImage getImageFromResource(String image) {
+        try {
+            return ImageIO.read(this.getClass().getResourceAsStream(image));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     //Outputs given image to tempdir
     private File writeOutputFile(BufferedImage imageToOutput) {
         File outputFile = new File(tempDir + "PUBGMAPEDIT.jpg");
@@ -527,7 +529,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         for(Point point : winPoints)
         {
             assert image != null;
-            generateDropPositionImage(image, (int)point.getX(), (int)point.getY(), "x");
+            markMapPosition(image, (int)point.getX(), (int)point.getY(), "x");
         }
         return image;
     }
