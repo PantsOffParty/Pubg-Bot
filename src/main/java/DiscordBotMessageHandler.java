@@ -196,10 +196,6 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 currentMap = 's';
             } else {
                 switch (cmdSplit[1]) {
-                    case "s":
-                        img = getImageFromResource("PUBGMAP1.jpg");
-                        currentMap = 's';
-                        break;
                     case "m":
                         img = getImageFromResource("PUBGMAP2.jpg");
                         currentMap = 'm';
@@ -207,6 +203,10 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                     case "e":
                         img = getImageFromResource("PUBGMAP3.jpg");
                         currentMap = 'e';
+                        break;
+                    case "v":
+                        img = getImageFromResource("PUBGMAP4.jpg");
+                        currentMap = 'v';
                         break;
                     default:
                         img = getImageFromResource("PUBGMAP1.jpg");

@@ -22,7 +22,8 @@
 workspace.xml
 /out/
 #R
-usage.statistics.xml
+usage.
+statistics.xml
 tasks.xml
 .iml
 .idea/modules.xml
