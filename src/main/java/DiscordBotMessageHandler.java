@@ -1,6 +1,7 @@
 import Database.DatabaseConnector;
 import Pubg.Api.Client.PubgApiClient;
 import Util.ConfigHandler;
+import Util.Edge;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -36,9 +37,14 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     private Vector<Point> unvisitedBuildings = new Vector<>();
     private PubgApiClient apiClient = new PubgApiClient();
     private DatabaseConnector db = new DatabaseConnector();
+    private Vector<Edge> myEdges = new Vector<>();
+    private Vector<Point> visitedBuildings = new Vector<>();
+
+    private int graphicsFontSize = 40;
 
     //Stuff for Strategy generation. pulled out so it doesn't rerun every time a message is received
-    private final String[] strat = new String[]{"Fast and Loose",
+    private final String[] strat = new String[]{
+            "Fast and Loose",
             "Hyper-aggressive",
             "Mounted Combat",
             "Play It Safe",
@@ -61,7 +67,8 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             "Make 'em Bleed",
             "Use your Fuckin' Brains, Retards",
             "Mountain Goat",
-            "One Gun Salute"};
+            "One Gun Salute"
+    };
 
     private final int STRATNUM = strat.length;
     private final static Map<String, String> helpMap; //Map to store command list and action
@@ -79,8 +86,8 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
     }
 
+    //Logs Bot into Discord and gets ready to receive Messages
     DiscordBotMessageHandler() {
-        //Logs Bot into Discord and gets ready to receive Messages
         JDABuilder builder = new JDABuilder(AccountType.BOT);
         builder.setToken(ConfigHandler.getBotConfig("bot.token"));
         builder.addEventListener(this);
@@ -211,10 +218,10 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
             if (cmdSplit.length == 3) {
                 int dropCount = Integer.parseInt(cmdSplit[2]);
-                generateDropPositionImage(img, dropCount);
+                generateDropPosition(img, dropCount);
             } else {
                 int dropCount = 1;
-                generateDropPositionImage(img, dropCount);
+                generateDropPosition(img, dropCount);
             }
             event.getChannel().sendFile(writeOutputFile(img)).queue();
         }
@@ -268,6 +275,8 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             //Debugging
             String vectorSize = "This vector holds " + String.valueOf(unvisitedBuildings.size()) + " nodes.";
             event.getChannel().sendMessage(vectorSize).queue();
+            String edgesSize = "The edge vector holds " + String.valueOf(myEdges.size()) + " edges.";
+            event.getChannel().sendMessage(edgesSize).queue();
         }
 
 
@@ -313,19 +322,33 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         event.getChannel().sendMessage(output).queue();
     }
 
-    //Reads in an image into a BufferedImage object
-    private BufferedImage getImageFromResource(String image) {
-        try {
-            return ImageIO.read(this.getClass().getResourceAsStream(image));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+    //Start of DropPosition generation. Generates random position and calls image generator
+    private void generateDropPosition(BufferedImage image, int dropCount) {
+        int imgH = image.getHeight();
+        int imgW = image.getWidth();
+
+        //Loop to work with multiple drops if necessary
+        for (int i = 1; i < dropCount + 1; i++) {
+            while (true) {
+                int x = rand.nextInt(imgW);
+                int y = rand.nextInt(imgH);
+
+                int colorRGB = image.getRGB(x, y);
+                Color color = new Color(colorRGB);
+                //Picking non water position and call generatezDropPositionImage
+                if ((color.getBlue() <= color.getRed() && color.getBlue() <= color.getGreen()) || (color.getBlue() <= 50 && color.getGreen() <= 50 && color.getRed() >= 20)) {
+                    generateDropPositionImageMULTI(image, x, y, i);
+                    currentCoordinatesMap.put(String.valueOf(i), new Point(x, y));
+                    break;
+                }
+            }
         }
     }
 
+    //Multi-Drop compatible Version that generates an image with given coords with a different color incremented number
+    private void generateDropPositionImageMULTI(BufferedImage image, int x, int y, int color) {
 
-    //Overloaded Version that generates an image with given coords marked NOT RANDOM
-    private void generateDropPositionImage(BufferedImage image, int x, int y, int color) {
+        //Picks random color from list
         color--;
         List<Color> colors = Arrays.asList(
                 RED,
@@ -337,40 +360,21 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 CYAN);
         int xColor = color % colors.size();
         color++;
+
+        //Draws colorValue in xColor's color
         Graphics2D graphics2D = image.createGraphics();
-        graphics2D.setFont(new Font("Ariel", Font.PLAIN, 40));
+        graphics2D.setFont(new Font("Ariel", Font.PLAIN, graphicsFontSize));
         graphics2D.setColor(colors.get(xColor));
         graphics2D.drawString(String.valueOf(color), x, y);
     }
 
-    //Overload Image creation with any symbol we want not RANDOM
-    private void generateDropPositionImage(BufferedImage image, int x, int y, String mark) {
+    //Marks a given point on image with given Mark
+    private void markMapPosition(BufferedImage image, int x, int y, String mark) {
 
         Graphics2D graphics2D = image.createGraphics();
-        graphics2D.setFont(new Font("Ariel", Font.PLAIN, 90));
+        graphics2D.setFont(new Font("Ariel", Font.PLAIN, graphicsFontSize));
         graphics2D.setColor(RED);
         graphics2D.drawString(mark, x, y);
-    }
-
-    //Overloaded version for Multiple drops. Used with every drop now.
-    private void generateDropPositionImage(BufferedImage image, int optionCount) {
-        int imgH = image.getHeight();
-        int imgW = image.getWidth();
-
-        for (int i = 1; i < optionCount + 1; i++) {
-            while (true) {
-                int x = rand.nextInt(imgW);
-                int y = rand.nextInt(imgH);
-
-                int colorRGB = image.getRGB(x, y);
-                Color color = new Color(colorRGB);
-                if ((color.getBlue() <= color.getRed() && color.getBlue() <= color.getGreen()) || (color.getBlue() <= 50 && color.getGreen() <= 50 && color.getRed() >= 20)) {
-                    generateDropPositionImage(image, x, y, i);
-                    currentCoordinatesMap.put(String.valueOf(i), new Point(x, y));
-                    break;
-                }
-            }
-        }
     }
 
     //Version for pathing. Picks buildings, then builds paths between
@@ -380,14 +384,15 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
         //Graphics settings
         Graphics2D graphics2D = image.createGraphics();
-        graphics2D.setFont(new Font("Ariel", Font.PLAIN, 10));
+        graphics2D.setFont(new Font("Ariel", Font.PLAIN, graphicsFontSize));
         graphics2D.setColor(RED);
         //Making sure our building vector is empty
         unvisitedBuildings.clear();
 
         //Setting min and max coords for plotting around a drop site
         Point currentCoords = currentCoordinatesMap.get("1");
-        int distance = 200; //Distance in pixels of the area to search in
+        int distance = 400; //Distance in pixels of the area to search in
+        int squareDiameter = 25; //Diameter of the drawn square, shrinking this for more accurate results, but a bigger vector
         int startX = currentCoords.x - distance / 2;
         int startY = currentCoords.y - distance / 2;
         if (startX < 0) startX = 0;
@@ -399,57 +404,92 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
         //Marks every building on map and adds to set
 //Uncommenting this makes path run for the entire map
-//        for(int y=0; y < imgH; y++){
-//            for(int x = 0; x < imgW; x++) {
         for (int y = startY; y < maxY; y++) {
             for (int x = startX; x < maxX; x++) {
                 int colorRGB = image.getRGB(x, y);
                 Color color = new Color(colorRGB);
 
-                //Diameter of the drawn square, shrinking this for more accurate results, but a bigger vector
-                int squareDiameter = 10;
+
                 //This loop will not work when the rectangles stop getting added, which is necessary to show a readable path
                 //Draws rectangles to mark buildings MOSTLY FOR DEBUGGING
                 if ((color.getRed() >= 150 && color.getGreen() >= 170 && color.getBlue() >= 170) && color != RED) {
                     graphics2D.setColor(RED);
-                    graphics2D.fillRect(x - squareDiameter / 2, y - squareDiameter / 2, squareDiameter, squareDiameter);
+//                    graphics2D.fillRect(x - squareDiameter / 2, y - squareDiameter / 2, squareDiameter, squareDiameter);
                     Point myPoint = new Point(x, y);
                     unvisitedBuildings.add(myPoint);
                     x += squareDiameter / 2;
-
-                 /*for(int checkY = y - distance; checkY <= y; checkY++){
-                     for(int checkX = x - distance; checkX <= x + distance; checkX++) {
-                         Point checkPoint = new Point(checkX, checkY);
-                         if (unvisitedBuildings.contains(checkPoint)){
-                             alreadyAdded = true;
-                             break;
-                         }
-
-                     }
-                     }
-                 if (!alreadyAdded) {
-                     graphics2D.drawRect(x, y, 1, 1);
-                     Point myPoint = new Point(x, y);
-                     unvisitedBuildings.add(myPoint);
-                     x = x + distance - 1;
-                 }
-                 else{
-                     alreadyAdded = false;
-                 }*/
                 }
             }
         }
 
-        //Plots lines between every point in set
-  /*      for(int i = 0; i < unvisitedBuildings.size() - 1; i++){
-            Graphics2D graphics2D = image.createGraphics();
-            int currX = unvisitedBuildings.get(i).x;
-            int currY = unvisitedBuildings.get(i).y;
-            int nextX = unvisitedBuildings.get(i+1).x;
-            int nextY = unvisitedBuildings.get(i+1).y;
-            graphics2D.setColor(BLUE);
-            graphics2D.drawLine(currX, currY, nextX, nextY);
-        }*/
+        //Plots lines between every point in set || Calculates edges between all nodes in unvisitedBuildings
+        for(int startPos = 0; startPos < unvisitedBuildings.size() - 1; startPos++) {
+
+            int currX = unvisitedBuildings.get(startPos).x;
+            int currY = unvisitedBuildings.get(startPos).y;
+
+            for (int destPos = 1; destPos < unvisitedBuildings.size(); destPos++) {
+                int nextX = unvisitedBuildings.get(destPos).x;
+                int nextY = unvisitedBuildings.get(destPos).y;
+                graphics2D.setColor(RED);
+                //graphics2D.drawLine(currX, currY, nextX, nextY);
+                myEdges.add(new Edge(unvisitedBuildings.get(startPos),unvisitedBuildings.get(destPos)));
+            }
+        }
+//        int startPos = 0;
+//        int destPos = 1;
+//        while( destPos < myEdges.size()){
+//            int beginX = myEdges.get(startPos).pointA.x;
+//            int beginY = myEdges.get(startPos).pointA.y;
+//
+//            if (myEdges.get(destPos).pointA.x == beginX && myEdges.get(destPos).pointA.y == beginY){
+//                graphics2D.drawLine(beginX,beginY,myEdges.get(destPos).pointB.x,myEdges.get(destPos).pointB.y);
+//            }
+//            else if (myEdges.get(destPos).pointB.x == beginX && myEdges.get(destPos).pointB.y == beginY)
+//            {
+//                graphics2D.drawLine(myEdges.get(destPos).pointA.x,myEdges.get(destPos).pointA.y,beginX,beginY);
+//            }
+//            destPos++;
+//        }
+
+        //Adding drop position to edges to get distances necessary to find closest point
+
+        int i;
+
+        graphics2D.setColor(BLUE);
+        graphics2D.setFont(new Font("Ariel", Font.PLAIN, graphicsFontSize));
+        graphics2D.drawString("x",currentCoords.x,currentCoords.y);
+        Color red = RED;
+        graphics2D.setColor(RED);
+        while(unvisitedBuildings.size() != 0) {
+            Point closestPoint = null;
+            double closestDistance=999999999;
+            int closestIndex = -1;
+            myEdges.clear();
+            for (i = 0; i < unvisitedBuildings.size(); i++) {
+                myEdges.add(new Edge(currentCoords, unvisitedBuildings.get(i)));
+                if (myEdges.lastElement().distance <= closestDistance) {
+                    closestDistance = myEdges.lastElement().distance;
+                    closestPoint = unvisitedBuildings.get(i);
+                    closestIndex = i;
+                }
+            }
+            unvisitedBuildings.remove(closestIndex);
+            graphics2D.drawLine(currentCoords.x, currentCoords.y, closestPoint.x, closestPoint.y);
+            graphics2D.setColor(red);
+            visitedBuildings.add(closestPoint);
+            currentCoords = closestPoint;
+        }
+    }
+
+    //Reads in an image into a BufferedImage object
+    private BufferedImage getImageFromResource(String image) {
+        try {
+            return ImageIO.read(this.getClass().getResourceAsStream(image));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     //Outputs given image to tempdir
@@ -496,7 +536,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         for(Point point : winPoints)
         {
             assert image != null;
-            generateDropPositionImage(image, (int)point.getX(), (int)point.getY(), "x");
+            markMapPosition(image, (int)point.getX(), (int)point.getY(), "x");
         }
         return image;
     }
