@@ -208,6 +208,10 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                         img = getImageFromResource("PUBGMAP4.jpg");
                         currentMap = 'v';
                         break;
+                    case "a":
+                        img = getImageFromResource("apexworldedge.jpg");
+                        currentMap = 'a';
+                        break;
                     default:
                         img = getImageFromResource("PUBGMAP1.jpg");
                         currentMap = 's';
@@ -260,6 +264,10 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                     case "e":
                         img = getImageFromResource("PUBGMAP3.jpg");
                         currentMap = 'e';
+                        break;
+                    case "a":
+                        img = getImageFromResource("apexworldedge.jpg");
+                        currentMap = 'a';
                         break;
                     default:
                         img = getImageFromResource("PUBGMAP1.jpg");
@@ -336,7 +344,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 int colorRGB = image.getRGB(x, y);
                 Color color = new Color(colorRGB);
                 //Picking non water position and call generatezDropPositionImage
-                if ((color.getBlue() <= color.getRed() && color.getBlue() <= color.getGreen()) || (color.getBlue() <= 50 && color.getGreen() <= 50 && color.getRed() >= 20)) {
+                if ((color.getBlue() <= color.getRed() && color.getBlue() <= color.getGreen()) || (color.getBlue() <= 50 && color.getGreen() <= 50 && color.getRed() >= 20) || (color.getBlue() >= 80 && color.getGreen() >= 80 && color.getRed() >= 80)) {
                     generateDropPositionImageMULTI(image, x, y, i);
                     currentCoordinatesMap.put(String.valueOf(i), new Point(x, y));
                     break;
@@ -366,6 +374,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         graphics2D.setFont(new Font("Ariel", Font.PLAIN, graphicsFontSize));
         graphics2D.setColor(colors.get(xColor));
         graphics2D.drawString(String.valueOf(color), x, y);
+//        graphics2D.drawString(String.valueOf('.'), x, y); /*use for testing map color selections with period instead of number*/
     }
 
     //Marks a given point on image with given Mark
@@ -391,7 +400,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
         //Setting min and max coords for plotting around a drop site
         Point currentCoords = currentCoordinatesMap.get("1");
-        int distance = 400; //Distance in pixels of the area to search in
+        int distance = 500; //Distance in pixels of the area to search in
         int squareDiameter = 25; //Diameter of the drawn square, shrinking this for more accurate results, but a bigger vector
         int startX = currentCoords.x - distance / 2;
         int startY = currentCoords.y - distance / 2;
