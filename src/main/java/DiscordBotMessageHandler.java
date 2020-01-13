@@ -39,6 +39,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     private DatabaseConnector db = new DatabaseConnector();
     private Vector<Edge> myEdges = new Vector<>();
     private Vector<Point> visitedBuildings = new Vector<>();
+    private BufferedImage currMapImage;
 
     private int graphicsFontSize = 40;
 
@@ -78,11 +79,11 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
         helpMap.put("!ping", "Check if the bot is online.");
         helpMap.put("!win", "Save winning map position to the server.");
         helpMap.put("!strategy", "Be given a random strategy for how to play out the next round.");
-        helpMap.put("!drop (e,m,s) [#] OR !", "Be given a random position to drop in the next round.");
+        helpMap.put("!drop (e,m,s,a) [#] OR !", "Be given a random position to drop in the next round.");
         helpMap.put("!help", "View all possible bot commands.");
-        helpMap.put("!allwin (e,m,s)", "Display a map of all starting coordinates that resulted in a win for a given map.");
+        helpMap.put("!allwin (e,m,s,a)", "Display a map of all starting coordinates that resulted in a win for a given map.");
         helpMap.put("!stop", "Stops all instances of God Bot.");
-        helpMap.put("!path (e,m,s)", "Draws the most efficient starting path.");
+        helpMap.put("!path (e,m,s,a)", "Draws the most efficient starting path.");
 
     }
 
@@ -219,6 +220,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 }
             }
             assert img != null;
+            currMapImage = img;
 
             if (cmdSplit.length == 3) {
                 int dropCount = Integer.parseInt(cmdSplit[2]);
@@ -249,8 +251,9 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             BufferedImage img;
 
             if (cmdSplit.length == 1 || messageText.equals("!")) {
-                img = getImageFromResource("PUBGMAP1.jpg");
-                currentMap = 's';
+//                If blank, then pull in the last map we used for drop calculation
+                assert currMapImage != null;
+                img = currMapImage;
             } else {
                 switch (cmdSplit[1]) {
                     case "s":
