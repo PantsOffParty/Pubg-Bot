@@ -41,7 +41,7 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
     private Vector<Point> visitedBuildings = new Vector<>();
     private BufferedImage currMapImage;
 
-    private int graphicsFontSize = 40;
+    private int graphicsFontSize = 100;
 
     //Stuff for Strategy generation. pulled out so it doesn't rerun every time a message is received
     private final String[] strat = new String[]{
@@ -256,10 +256,6 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 img = currMapImage;
             } else {
                 switch (cmdSplit[1]) {
-                    case "s":
-                        img = getImageFromResource("PUBGMAP1.jpg");
-                        currentMap = 's';
-                        break;
                     case "m":
                         img = getImageFromResource("PUBGMAP2.jpg");
                         currentMap = 'm';
@@ -538,13 +534,16 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             case "m":
                 mapImageName = "PUBGMAP2.jpg";
                 break;
+            case "a":
+                mapImageName = "apexworldedge.jpg";
+                break;
             default:
                 mapImageName = "PUBGMAP1.jpg";
                 break;
         }
         image = getImageFromResource(mapImageName);
 
-        List<Point> winPoints = db.getAllWinCoordinatesByMap(String.valueOf(currentMap));
+        List<Point> winPoints = db.getAllWinCoordinatesByMap(mapKey);
         for(Point point : winPoints)
         {
             assert image != null;
