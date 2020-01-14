@@ -2,6 +2,7 @@ import Database.DatabaseConnector;
 import Pubg.Api.Client.PubgApiClient;
 import Util.ConfigHandler;
 import Util.Edge;
+import Util.TessUtil;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -11,9 +12,10 @@ import javax.imageio.ImageIO;
 import javax.security.auth.login.LoginException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.*;
 
 import static java.awt.Color.*;
 
@@ -229,6 +231,40 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
                 int dropCount = 1;
                 generateDropPosition(img, dropCount);
             }
+            event.getChannel().sendFile(writeOutputFile(img)).queue();
+        }
+
+        if (messageText.contains("!setdrop")) {
+            String cmdSplit[] = messageText.split(" ", 2);
+            BufferedImage img;
+            switch (cmdSplit[1]) {
+                case "m":
+                    img = getImageFromResource("PUBGMAP2.jpg");
+                    currentMap = 'm';
+                    break;
+                case "e":
+                    img = getImageFromResource("PUBGMAP3.jpg");
+                    currentMap = 'e';
+                    break;
+                case "v":
+                    img = getImageFromResource("PUBGMAP4.jpg");
+                    currentMap = 'v';
+                    break;
+                case "a":
+                    img = getImageFromResource("apexworldedge.jpg");
+                    currentMap = 'a';
+                    break;
+                default:
+                    img = getImageFromResource("PUBGMAP1.jpg");
+                    currentMap = 's';
+                    break;
+            }
+            assert img != null;
+            currMapImage = img;
+            Point locCords = TessUtil.getDropPositionCoords(img, "REFINERY");
+
+            generateDropPositionImageMULTI(img, (int)locCords.getX(), (int)locCords.getY(), 1);
+            currentCoordinatesMap.put("1", locCords);
             event.getChannel().sendFile(writeOutputFile(img)).queue();
         }
 
