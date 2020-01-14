@@ -12,16 +12,20 @@ import java.nio.file.Paths;
 
 public class TessUtil {
 
-    public static Point getDropPositionCoords(BufferedImage mapImg, String location) {
+    public static String getDropPositionCoords(BufferedImage mapImg, String location) {
         Tesseract tesseract = new Tesseract();
         tesseract.setDatapath(Paths.get("src", "main", "resources", "trainedData").toAbsolutePath().toString());
         tesseract.setTessVariable("user_defined_dpi", "500");
         tesseract.setTessVariable("tessedit_char_whitelist", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        mapImg = ImageHelper.convertImageToBinary(mapImg);
+        tesseract.setPageSegMode(11);
         Rectangle rect = new Rectangle();
 
-   //     mapImg = ImageHelper.getScaledInstance(mapImg, 2000, 2000);
+        String results = "";
         try {
-            System.out.println(tesseract.doOCR(mapImg));
+            results = tesseract.doOCR(mapImg);
+            System.out.println(results);
+
         } catch (TesseractException e) {
             e.printStackTrace();
         }
@@ -30,6 +34,6 @@ public class TessUtil {
 //            rect = word.getBoundingBox();
 //            break;
 //        }
-        return rect.getLocation();
+        return results;
     }
 }

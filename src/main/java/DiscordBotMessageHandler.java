@@ -261,11 +261,12 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
             }
             assert img != null;
             currMapImage = img;
-            Point locCords = TessUtil.getDropPositionCoords(img, "REFINERY");
-
-            generateDropPositionImageMULTI(img, (int)locCords.getX(), (int)locCords.getY(), 1);
-            currentCoordinatesMap.put("1", locCords);
-            event.getChannel().sendFile(writeOutputFile(img)).queue();
+//            Point locCords = TessUtil.getDropPositionCoords(img, "REFINERY");
+//
+//            generateDropPositionImageMULTI(img, (int)locCords.getX(), (int)locCords.getY(), 1);
+//            currentCoordinatesMap.put("1", locCords);
+            //event.getChannel().sendFile(writeOutputFile(img)).queue();
+            event.getChannel().sendMessage(TessUtil.getDropPositionCoords(img, "REFINERY")).queue();
         }
 
         //Regurgitate all winning coordinates for a given map
