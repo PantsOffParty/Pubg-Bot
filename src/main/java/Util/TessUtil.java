@@ -15,11 +15,10 @@ public class TessUtil {
     public static Point getDropPositionCoords(BufferedImage mapImg, String location) {
         Tesseract tesseract = new Tesseract();
         tesseract.setDatapath(Paths.get("src", "main", "resources", "trainedData").toAbsolutePath().toString());
-        tesseract.setTessVariable("user_defined_dpi", "500");
-        tesseract.setTessVariable("tessedit_char_whitelist", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        tesseract.setTessVariable("user_defined_dpi", "300");
         Rectangle rect = new Rectangle();
 
-   //     mapImg = ImageHelper.getScaledInstance(mapImg, 2000, 2000);
+        mapImg = ImageHelper.getScaledInstance(mapImg, 1000, 1000);
         try {
             System.out.println(tesseract.doOCR(mapImg));
         } catch (TesseractException e) {
