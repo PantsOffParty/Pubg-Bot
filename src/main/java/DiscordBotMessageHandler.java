@@ -2,10 +2,11 @@ import Database.DatabaseConnector;
 import Pubg.Api.Client.PubgApiClient;
 import Util.ConfigHandler;
 import Util.Edge;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.imageio.ImageIO;
 import javax.security.auth.login.LoginException;
@@ -89,13 +90,19 @@ public class DiscordBotMessageHandler extends ListenerAdapter {
 
     //Logs Bot into Discord and gets ready to receive Messages
     DiscordBotMessageHandler() {
-        JDABuilder builder = new JDABuilder(AccountType.BOT);
-        builder.setToken(ConfigHandler.getBotConfig("bot.token"));
-        builder.addEventListener(this);
+        JDA jda = null;
+        JDABuilder builder = JDABuilder.createDefault(ConfigHandler.getBotConfig("bot.token"))
+                .addEventListeners(this);
         try {
-            builder.buildAsync();
+            jda = builder.build();
         } catch (LoginException e) {
             System.err.println("Unable to login.");
+        }
+
+        try {
+            jda.awaitReady();
+        } catch (InterruptedException e) {
+            System.err.println("Error waiting for JDA to complete setup.");
         }
     }
 
